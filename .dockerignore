@@ -5,4 +5,8 @@ node_modules
 .git
 .env
 **/.env
+.env.*
+**/.env.*
 coverage
+*.tsbuildinfo
+**/*.tsbuildinfo

@@ -64,18 +64,21 @@ Deploy the web and API as separate services; a Next.js Vercel deployment does no
 
 ### Web (Vercel)
 
-1. Import the repository in Vercel with the repository root as the project root; [`vercel.json`](./vercel.json) builds the shared types before the web app.
+1. Import the repository in Vercel. Select `apps/web` as the project root and enable access to files outside the root directory for this monorepo. [`apps/web/vercel.json`](./apps/web/vercel.json) builds the shared types before the web app.
 2. Set `NEXT_PUBLIC_API_URL` to the deployed API base ending in `/api`.
 3. Set `WEB_ORIGIN` on the API to the public web origin. For multiple origins, use a comma-separated allow-list.
 4. Build using the monorepo install context. The shared workspace package must be built before the web production build (`npm run build -w @basmat-fan/shared`, then `npm run build -w @basmat-fan/web`).
 
 ### API (Node host / Railway / Render)
 
-1. Create a persistent Node.js service using `apps/api/Dockerfile` or the commands `npm install`, `npm run db:generate -w @basmat-fan/api`, and `npm run build -w @basmat-fan/api`.
+1. Create a persistent Node.js service from the repository root using `apps/api/Dockerfile`, or the commands `npm install`, `npm run db:generate -w @basmat-fan/api`, `npm run build -w @basmat-fan/shared`, and `npm run build -w @basmat-fan/api`. On Railway, select the Dockerfile builder and set the Dockerfile path to `apps/api/Dockerfile`. The API listens on Railway's `PORT` when set, otherwise `API_PORT` or 4000. Railway's legacy `railway.toml` config-as-code support is scheduled to end on 2026-12-01, so configure these settings in the service dashboard or migrate to Railway's current infrastructure-as-code mechanism.
 2. Start with `npm run start -w @basmat-fan/api`.
 3. Configure `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`, `WEB_ORIGIN`, `API_PORT`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and all three Cloudinary credentials.
 4. Run `npm run db:migrate` and `npm run db:seed` as controlled release/one-off jobs. Expose `/api/health` for health checks.
 5. Configure `WEB_ORIGIN` for the deployed web URL. When web and API are on separate sites, the admin cookie uses `SameSite=None; Secure`; both services must be HTTPS.
+6. Browsers that block third-party cookies can prevent admin login when web and API use unrelated domains. For reliable admin sessions, configure HTTPS custom domains under the same registrable domain (for example `www.example.com` and `api.example.com`), and set `WEB_ORIGIN` and `NEXT_PUBLIC_API_URL` accordingly.
+
+Do not commit environment files or credentials. If a Cloudinary API secret has been exposed, rotate it in Cloudinary and enter the replacement directly in the API host's secret variables.
 
 ## Useful commands
 

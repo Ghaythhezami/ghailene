@@ -14,6 +14,7 @@ const environmentSchema = z.object({
   DIRECT_URL: z.string().url(),
   JWT_SECRET: z.string().min(32),
   API_PORT: z.coerce.number().int().positive().default(4000),
+  PORT: z.coerce.number().int().positive().optional(),
   WEB_ORIGIN: z.string().default("http://localhost:3000"),
 });
 
