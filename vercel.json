@@ -1,0 +1,5 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build -w @basmat-fan/shared && npm run build -w @basmat-fan/web",
+  "installCommand": "npm install"
+}

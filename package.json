@@ -1,0 +1,22 @@
+{
+  "name": "basmat-fan",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/web",
+    "apps/api",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev": "npm run build -w @basmat-fan/shared && concurrently \"npm run dev -w @basmat-fan/api\" \"npm run dev -w @basmat-fan/web\"",
+    "build": "npm run build -w @basmat-fan/shared && npm run build -w @basmat-fan/api && npm run build -w @basmat-fan/web",
+    "typecheck": "npm run build -w @basmat-fan/shared && npm run typecheck -w @basmat-fan/api && npm run typecheck -w @basmat-fan/web",
+    "db:generate": "npm run db:generate -w @basmat-fan/api",
+    "db:migrate": "npm run db:migrate -w @basmat-fan/api",
+    "db:seed": "npm run db:seed -w @basmat-fan/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}
