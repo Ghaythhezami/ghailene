@@ -6,7 +6,7 @@ An Arabic, right-to-left digital art museum for مدارس الابتكارية 
 
 - Immersive, responsive Arabic homepage with school/company marks and teacher portrait supplied for the project.
 - Installable progressive web app, with an offline connection notice; live gallery content still requires an internet connection.
-- Searchable, published-only public gallery with category filters, artwork details, student privacy labels, and a lightweight Three.js gallery-room scene.
+- Searchable, published-only public gallery with animated category stories, 3-second multi-image slides and 4-second single-image works, server-backed pagination, artwork details, student privacy labels, and a lightweight Three.js gallery-room scene. Auto-advance pauses for dialogs, hidden tabs, and reduced-motion preferences.
 - Separate `/admin` content-management area with administrator login, summary metrics, and CRUD for artwork, students, grades, classes, categories, projects, and gallery events, plus website settings.
 - NestJS API with request validation, Swagger docs, Helmet, CORS allow-list, rate limiting, Argon2 admin password hashes, short-lived JWT in an HttpOnly cookie, role checks, and Cloudinary uploads.
 - PostgreSQL schema, Prisma seed, Neon pooled runtime URL and direct migration URL support, and conventional Node deployment configuration.
@@ -48,7 +48,7 @@ On the production HTTPS site, open **أدوات المعرض** and choose **تث
 
 ## Database and migrations
 
-The Prisma schema is `apps/api/prisma/schema.prisma`. Runtime queries use `DATABASE_URL`; Prisma migrations use `DIRECT_URL`. The initial migration enables PostgreSQL `pg_trgm` indexes for substring search. Run `npm run db:migrate` after applying a reviewed migration, and `npm run db:seed` to upsert the first admin, settings row, and initial categories. Do not use the seed script to rotate a live admin password unless that reset is intended: it updates the matching admin's hash.
+The Prisma schema is `apps/api/prisma/schema.prisma`. Runtime queries use `DATABASE_URL`; Prisma migrations use `DIRECT_URL`. The initial migration enables PostgreSQL `pg_trgm` indexes for substring search. Run `npm run db:migrate` to apply reviewed migrations and `npm run db:seed` to create the initial admin, settings row, and categories. Seeding does not change an existing administrator's password or reactivate a disabled account.
 
 For schema changes during development, use Prisma Migrate to create and review migration SQL, then commit the resulting migration directory. Never run `db push` against production.
 
@@ -65,7 +65,7 @@ Deploy the web and API as separate services; a Next.js Vercel deployment does no
 ### Web (Vercel)
 
 1. Import the repository in Vercel. Select `apps/web` as the project root and enable access to files outside the root directory for this monorepo. [`apps/web/vercel.json`](./apps/web/vercel.json) builds the shared types before the web app.
-2. Set `NEXT_PUBLIC_API_URL` to the deployed API base ending in `/api`.
+2. Set `NEXT_PUBLIC_API_URL` to the deployed API base ending in `/api`. Production browser requests use the same-origin `/api` proxy configured by Next.js, avoiding third-party cookie restrictions; redeploy after changing this variable.
 3. Set `WEB_ORIGIN` on the API to the public web origin. For multiple origins, use a comma-separated allow-list.
 4. Build using the monorepo install context. The shared workspace package must be built before the web production build (`npm run build -w @basmat-fan/shared`, then `npm run build -w @basmat-fan/web`).
 
@@ -74,9 +74,9 @@ Deploy the web and API as separate services; a Next.js Vercel deployment does no
 1. Create a persistent Node.js service from the repository root using `apps/api/Dockerfile`, or the commands `npm install`, `npm run db:generate -w @basmat-fan/api`, `npm run build -w @basmat-fan/shared`, and `npm run build -w @basmat-fan/api`. On Railway, select the Dockerfile builder and set the Dockerfile path to `apps/api/Dockerfile`. The API listens on Railway's `PORT` when set, otherwise `API_PORT` or 4000. Railway's legacy `railway.toml` config-as-code support is scheduled to end on 2026-12-01, so configure these settings in the service dashboard or migrate to Railway's current infrastructure-as-code mechanism.
 2. Start with `npm run start -w @basmat-fan/api`.
 3. Configure `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`, `WEB_ORIGIN`, `API_PORT`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and all three Cloudinary credentials.
-4. Run `npm run db:migrate` and `npm run db:seed` as controlled release/one-off jobs. Expose `/api/health` for health checks.
+4. The Docker startup runs `npm run db:migrate`, then runs the seed when both `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set. Set them in the host's secret environment variables for the first deployment; never commit them. Existing administrators are not overwritten. Remove the bootstrap variables afterwards. If using the non-Docker start command, run migrations and the seed as controlled release/one-off jobs instead. Expose `/api/health` for health checks.
 5. Configure `WEB_ORIGIN` for the deployed web URL. When web and API are on separate sites, the admin cookie uses `SameSite=None; Secure`; both services must be HTTPS.
-6. Browsers that block third-party cookies can prevent admin login when web and API use unrelated domains. For reliable admin sessions, configure HTTPS custom domains under the same registrable domain (for example `www.example.com` and `api.example.com`), and set `WEB_ORIGIN` and `NEXT_PUBLIC_API_URL` accordingly.
+6. Keep `WEB_ORIGIN` set to the exact frontend origin even when using the proxy: the API validates the browser's `Origin` on state-changing requests. Configure the proxy destination through `NEXT_PUBLIC_API_URL` and use HTTPS in production.
 
 Do not commit environment files or credentials. If a Cloudinary API secret has been exposed, rotate it in Cloudinary and enter the replacement directly in the API host's secret variables.
 

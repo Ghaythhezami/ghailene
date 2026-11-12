@@ -1,10 +1,22 @@
-const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(/\/$/, "");
+import { apiBase } from "./api-base";
+
+export class AdminRequestError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+  }
+}
 
 export async function adminRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   if (init.body && !(init.body instanceof FormData)) headers.set("Content-Type", "application/json");
   headers.set("Accept", "application/json");
-  const response = await fetch(`${apiBase}${path}`, { ...init, headers, credentials: "include" });
+  let response: Response;
+  try {
+    response = await fetch(`${apiBase}${path}`, { ...init, headers, credentials: "include" });
+  } catch (error) {
+    console.error("Admin API connection failed:", error);
+    throw new Error("تعذر الاتصال بالخادم. تحقق من اتصال الإنترنت وإعدادات الموقع والخادم.");
+  }
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
     try {
@@ -13,7 +25,7 @@ export async function adminRequest<T>(path: string, init: RequestInit = {}): Pro
     } catch {
       // Keep the HTTP status message when an upstream response is not JSON.
     }
-    throw new Error(message);
+    throw new AdminRequestError(message, response.status);
   }
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;

@@ -5,7 +5,7 @@ import {
   Activity, BookOpen, Check, ChevronLeft, CircleUserRound, Eye, FolderKanban, Image as ImageIcon,
   LayoutDashboard, LogOut, Palette, Plus, Save, Settings, Trash2, Upload, Users, X,
 } from "lucide-react";
-import { adminRequest } from "@/lib/admin-api";
+import { AdminRequestError, adminRequest } from "@/lib/admin-api";
 
 type Tab = "overview" | "artworks" | "categories" | "projects" | "events" | "students" | "grades" | "classes" | "settings";
 type RecordRow = Record<string, unknown> & { id: string; name?: string; title?: string; slug?: string; status?: string };
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
       .then(() => { if (active) setAuthenticated(true); })
       .catch((requestError: unknown) => {
         const message = requestError instanceof Error ? requestError.message : "";
-        if (active && !message.includes("401") && !message.includes("Unauthorized")) setError(message);
+        if (active && !(requestError instanceof AdminRequestError && requestError.status === 401)) setError(message || "تعذر الاتصال بالخادم.");
       });
     return () => { active = false; };
   }, []);
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
       }
     } catch (requestError) {
       const message = requestError instanceof Error ? requestError.message : "تعذر تحميل بيانات لوحة الإدارة.";
-      if (message.includes("401") || message.includes("Unauthorized") || message.includes("expired")) {
+      if (requestError instanceof AdminRequestError && requestError.status === 401) {
         setAuthenticated(false);
       } else setError(message);
     }

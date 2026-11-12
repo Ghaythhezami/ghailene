@@ -14,6 +14,7 @@ import type {
 } from "@basmat-fan/shared";
 import { fetchPublicContent } from "@/lib/api";
 import { InstallAppButton } from "@/components/install-app-button";
+import { GalleryStory } from "@/components/gallery-story";
 
 const GalleryRoom = dynamic(() => import("@/components/gallery-room"), { ssr: false });
 
@@ -54,6 +55,7 @@ export default function HomePage() {
   const [events, setEvents] = useState<PublicGalleryEvent[]>([]);
   const [selected, setSelected] = useState<PublicArtwork | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [storyOpen, setStoryOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState("");
   const [classFilter, setClassFilter] = useState("");
@@ -68,30 +70,51 @@ export default function HomePage() {
   const toolsDialogRef = useRef<HTMLDialogElement>(null);
   const profileDialogRef = useRef<HTMLDialogElement>(null);
   const [pagination, setPagination] = useState({ page: 1, pageSize: 12, total: 0, pages: 0 });
+  const galleryRequest = useRef(0);
+  const selectedRef = useRef<PublicArtwork | null>(null);
+  selectedRef.current = selected;
 
-  const loadGallery = useCallback(async (query: URLSearchParams = new URLSearchParams()) => {
+  const loadGallery = useCallback(async (query: URLSearchParams = new URLSearchParams(), selectPage?: { side: "first" | "last"; currentId: string }) => {
+    const requestId = ++galleryRequest.current;
     setLoading(true);
     setApiError("");
     try {
       const content = await fetchPublicContent(query);
+      if (requestId !== galleryRequest.current) return;
       setSettings(content.settings ?? defaultSettings);
       setCategories(content.categories);
       setArtworks(content.artworks);
       setFilterOptions(content.filters ?? { grades: [], classes: [], projects: [] });
       setEvents(content.events ?? []);
       setPagination(content.pagination);
+      if (selectPage && selectedRef.current?.id === selectPage.currentId && content.artworks.length) {
+        setSelected(selectPage.side === "first" ? content.artworks[0] : content.artworks[content.artworks.length - 1]);
+      }
     } catch (error) {
+      if (requestId !== galleryRequest.current) return;
       setApiError(error instanceof Error ? error.message : "تعذر الاتصال بالمعرض");
-      setArtworks([]);
+      if (!selectPage) {
+        setArtworks([]);
+        setPagination({ page: Number(query.get("page")) || 1, pageSize: 12, total: 0, pages: 0 });
+      }
     } finally {
-      setLoading(false);
+      if (requestId === galleryRequest.current) setLoading(false);
     }
   }, []);
-  const moveArtwork = useCallback((offset: number) => {
-    if (!selected || artworks.length < 2) return;
+  function moveArtwork(offset: number) {
+    if (!selected || loading || !artworks.length) return;
     const index = artworks.findIndex((artwork) => artwork.id === selected.id);
-    setSelected(artworks[(index + offset + artworks.length) % artworks.length]);
-  }, [artworks, selected]);
+    if (index < 0) return;
+    const next = index + offset;
+    if (next >= 0 && next < artworks.length) {
+      setSelected(artworks[next]);
+    } else if (pagination.pages > 1) {
+      const page = offset > 0 ? (pagination.page < pagination.pages ? pagination.page + 1 : 1) : (pagination.page > 1 ? pagination.page - 1 : pagination.pages);
+      void loadGallery(galleryParams(page), { side: offset > 0 ? "first" : "last", currentId: selected.id });
+    } else {
+      setSelected(artworks[(next + artworks.length) % artworks.length]);
+    }
+  }
 
   useEffect(() => { void loadGallery(); }, [loadGallery]);
   useEffect(() => {
@@ -165,6 +188,7 @@ export default function HomePage() {
     event.preventDefault();
     setToolsOpen(false);
     setActiveView("gallery");
+    setStoryOpen(true);
     void loadGallery(galleryParams());
   }
 
@@ -175,6 +199,7 @@ export default function HomePage() {
   function openHome() {
     setActiveView("gallery");
     setSelectedCategory("");
+    setStoryOpen(false);
     setSearch("");
     setGradeFilter("");
     setClassFilter("");
@@ -186,15 +211,17 @@ export default function HomePage() {
   }
 
   function chooseCategory(slug: string) {
-    const next = slug === "__all__" || selectedCategory === slug ? "" : slug;
+    const next = slug === "__all__" ? "" : slug;
     setSelectedCategory(next);
     setActiveView("gallery");
+    setStoryOpen(true);
     void loadGallery(galleryParams(1, next));
   }
 
   function applyGalleryFilters(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setActiveView("gallery");
+    setStoryOpen(true);
     setFiltersOpen(false);
     void loadGallery(galleryParams());
   }
@@ -233,7 +260,7 @@ export default function HomePage() {
         <TeacherProfile settings={settings} full />
       </dialog>
 
-      <section className={`museum-stage ${activeView !== "gallery" ? "museum-stage-panel-open" : ""}`} aria-label="معرض بصمة فن التفاعلي">
+      <section className={`museum-stage ${activeView !== "gallery" ? "museum-stage-panel-open" : ""} ${storyOpen && activeView === "gallery" ? "museum-stage-story" : ""}`} aria-label="معرض بصمة فن التفاعلي">
         <div className="museum-scene" aria-label="قاعة معرض فنية ثلاثية الأبعاد"><GalleryRoom artworks={artworks} onSelect={setSelected} /></div>
         <div className="museum-scene-shade" aria-hidden="true" />
         <AnimatePresence>
@@ -246,11 +273,24 @@ export default function HomePage() {
             <div className="museum-filter-actions"><button type="button" onClick={clearGalleryFilters}>مسح</button><button type="submit">عرض الأعمال</button></div>
           </motion.form>}
         </AnimatePresence>
-        <TeacherProfile settings={settings} onExpand={() => setProfileOpen(true)} />
+        {!(storyOpen && activeView === "gallery") && <TeacherProfile settings={settings} onExpand={() => setProfileOpen(true)} />}
         <button className="museum-open-tools" onClick={() => setToolsOpen(true)}><Grid2X2 size={16} /> أدوات المعرض</button>
 
+        {storyOpen && activeView === "gallery" && <GalleryStory
+          key={`${selectedCategory}-${pagination.page}`}
+          artworks={artworks}
+          category={categoryCards.find((category) => category.slug === selectedCategory)?.name ?? "كل المشاريع"}
+          loading={loading}
+          error={apiError}
+          pagination={pagination}
+          initialArtworkId={selected?.id}
+          paused={Boolean(selected) || toolsOpen || filtersOpen || profileOpen}
+          onPage={(page) => void loadGallery(galleryParams(page))}
+          onSelect={setSelected}
+          onClose={() => setStoryOpen(false)}
+        />}
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={`${activeView}-${selectedCategory}`} className="museum-center" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: -8 }} transition={{ duration: 0.32 }}>
+          {!(storyOpen && activeView === "gallery") && <motion.div key={`${activeView}-${selectedCategory}`} className="museum-center" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: -8 }} transition={{ duration: 0.32 }}>
             {activeView === "gallery" && <>
               <span className="museum-eyebrow"><i /> {settings.description}</span>
               <h1>{settings.platformName}</h1>
@@ -286,10 +326,10 @@ export default function HomePage() {
               <p className="museum-panel-lead">{settings.secondarySlogan || "من أنامل صغيرة تنطلق إبداعات كبيرة؛ هنا نرسم أحلامنا ونترك بصمتنا."}</p>
               <div className="museum-about-mark"><Palette size={24} /><span>{settings.platformName}<small>{settings.description}</small></span></div>
             </div>}
-          </motion.div>
+          </motion.div>}
         </AnimatePresence>
 
-        {artworks.length > 0 && activeView === "gallery" && <aside className="museum-featured" aria-label="أعمال من المعرض">
+        {artworks.length > 0 && activeView === "gallery" && !storyOpen && <aside className="museum-featured" aria-label="أعمال من المعرض">
           <div className="museum-featured-heading"><span>من مرسمنا إلى العالم</span><small>{loading ? "•••" : `${pagination.total} أعمال`}</small></div>
           {artworks.slice(0, 2).map((artwork, index) => <motion.button className="museum-art-preview" key={artwork.id} onClick={() => setSelected(artwork)} whileHover={reduceMotion ? undefined : { y: -3 }} whileTap={reduceMotion ? undefined : { scale: 0.98 }}>
             <span className="museum-preview-image">
@@ -416,7 +456,7 @@ function ArtworkDialog({
       <motion.article className="artwork-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" initial={{ opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }} onClick={(event) => event.stopPropagation()}>
         <button className="dialog-close" onClick={onClose} aria-label="إغلاق"><X size={19} /></button>
         <div className={`dialog-image ${zoomed ? "zoomed" : ""}`}>
-          {image ? <button className="dialog-image-zoom" onClick={() => setZoomed((value) => !value)} aria-label={zoomed ? "تصغير الصورة" : "تكبير الصورة"}><Image src={image.url} alt={image.alt || artwork.title} fill sizes="(max-width: 900px) 90vw, 50vw" /></button> : artwork.videoUrl ? <video src={artwork.videoUrl} controls playsInline aria-label={`فيديو العمل الفني: ${artwork.title}`} /> : <div className="artwork-placeholder"><Palette size={52} /></div>}
+          {image ? <AnimatePresence mode="wait" initial={false}><motion.button key={`${artwork.id}-${imageIndex}`} className="dialog-image-zoom" onClick={() => setZoomed((value) => !value)} aria-label={zoomed ? "تصغير الصورة" : "تكبير الصورة"} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: .3 }}><Image src={image.url} alt={image.alt || artwork.title} fill sizes="(max-width: 900px) 90vw, 50vw" /></motion.button></AnimatePresence> : artwork.videoUrl ? <video src={artwork.videoUrl} controls playsInline aria-label={`فيديو العمل الفني: ${artwork.title}`} /> : <div className="artwork-placeholder"><Palette size={52} /></div>}
           {artwork.images.length > 1 && <div className="dialog-thumbnails">{artwork.images.map((item, index) => <button key={item.url} className={index === imageIndex ? "active" : ""} onClick={() => setImageIndex(index)} aria-label={`عرض الصورة ${index + 1}`}><Image src={item.url} alt="" fill sizes="55px" /></button>)}</div>}
         </div>
         <div className="dialog-copy"><span className="section-kicker">{artwork.category.name}</span><h2 id="dialog-title">{artwork.title}</h2><p>{artwork.description || "عمل فني من إبداع طلابنا."}</p><dl><div><dt>الفنان</dt><dd>{artwork.studentDisplayName}</dd></div>{artwork.gradeName && <div><dt>الصف</dt><dd>{artwork.gradeName}</dd></div>}{artwork.projectName && <div><dt>المشروع</dt><dd>{artwork.projectName}</dd></div>}{artwork.materials.length > 0 && <div><dt>الخامات</dt><dd>{artwork.materials.join("، ")}</dd></div>}</dl></div>

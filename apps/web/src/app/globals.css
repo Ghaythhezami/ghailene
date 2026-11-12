@@ -798,6 +798,34 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 .museum-tools-search button { width: 46px; border: 0; background: transparent; color: #f0c579; cursor: pointer; }
 .museum-install button { display: flex; width: 100%; min-height: 44px; align-items: center; justify-content: center; gap: 7px; padding: 8px; border: 1px solid #e3c18d54; border-radius: 9px; background: #ffffff0d; color: #fff1df; font: inherit; font-size: 14px; cursor: pointer; }
 .museum-install p { margin: 8px 0 0; color: #f5d394; font-size: 13px; line-height: 1.6; }
+.museum-stage.museum-stage-story { display: flex; justify-content: center; padding: 10px clamp(15px, 7vw, 100px); }
+.gallery-story { position: relative; z-index: 3; display: flex; width: min(840px, 100%); height: 100%; min-height: 0; flex-direction: column; gap: 7px; padding: clamp(8px, 1.5svh, 15px); border: 1px solid #e8c37d94; border-radius: 16px; background: #211713eF; box-shadow: 0 16px 40px #0009; }
+.story-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-inline: 5px; }
+.story-heading small { color: #d7b97e; font-size: 11px; }.story-heading h2 { margin: 2px 0; color: #fff3e1; font-size: clamp(16px, 2vw, 25px); }
+.story-heading button, .story-arrow { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border: 1px solid #f5d49470; border-radius: 50%; background: #211a1bdc; color: #fff3dc; cursor: pointer; }
+.story-body { display: flex; min-height: 0; flex: 1; flex-direction: column; gap: 6px; }
+.story-frame { position: relative; min-height: 0; flex: 1; overflow: hidden; border: 1px solid #d5ab6959; border-radius: 10px; background: #130f0f; }
+.story-image { position: absolute; inset: 0; }.story-image img { object-fit: contain; }
+.story-placeholder { display: grid; height: 100%; place-content: center; gap: 8px; color: #e8c687; text-align: center; }
+.story-progress { position: absolute; z-index: 2; top: 9px; right: 12px; left: 12px; display: flex; gap: 4px; direction: ltr; }
+.story-progress button { height: 16px; flex: 1; padding: 6px 0; border: 0; background: transparent; cursor: pointer; }
+.story-progress button::before { display: block; height: 3px; border-radius: 4px; background: #ffffff65; content: ""; }
+.story-progress span { display: block; height: 3px; margin-top: -3px; border-radius: 4px; background: transparent; }.story-progress span.complete, .story-progress span.current { background: white; }.story-progress span.current { transform-origin: left; animation: story-progress linear forwards; }
+@keyframes story-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.story-arrow { position: absolute; z-index: 2; top: 50%; transform: translateY(-50%); }.story-prev { right: 8px; }.story-next { left: 8px; }.story-arrow:disabled { opacity: .35; cursor: default; }
+.story-copy { display: flex; min-height: 43px; align-items: center; justify-content: space-between; gap: 10px; padding: 0 5px; }.story-copy small { color: #dec8a3; font-size: 11px; }.story-copy h3 { margin: 2px 0 0; color: white; font-size: clamp(13px, 1.2vw, 17px); }
+.story-actions { display: flex; flex: 0 0 auto; gap: 6px; }.story-actions button, .story-pagination button, .story-message button { display: inline-flex; min-height: 32px; align-items: center; justify-content: center; gap: 5px; padding: 5px 10px; border: 1px solid #e1bc79a6; border-radius: 20px; background: #423024; color: #fff2dd; font: inherit; font-size: 11px; cursor: pointer; }
+.story-actions button:disabled, .story-pagination button:disabled { opacity: .45; cursor: default; }
+.story-pagination { display: flex; align-items: center; justify-content: center; gap: 12px; color: #ead4a9; font-size: 11px; }
+.story-message { display: flex; min-height: 0; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #f4e3c9; font-size: 14px; text-align: center; }
+@media (max-width: 900px) {
+  .museum-stage.museum-stage-story { padding: 5px 10px; }
+  .gallery-story { gap: 4px; padding: 7px; }
+  .story-heading { padding-inline: 3px 98px; }.story-heading small { display: none; }.story-heading h2 { font-size: 14px; }
+  .story-heading button { width: 28px; height: 28px; }.story-arrow { width: 30px; height: 30px; }
+  .story-copy { min-height: 36px; }.story-copy small { font-size: 10px; }.story-copy h3 { font-size: 12px; }.story-actions button, .story-pagination button { min-height: 28px; font-size: 10px; }
+  .story-pagination { gap: 8px; }
+}
 .museum-profile-dialog { width: min(580px, calc(100vw - 24px)); padding: 0; overflow-y: auto; }
 .museum-profile-dialog .profile-composition { max-height: none; border: 0; box-shadow: none; }
 .museum-profile-close { position: sticky; z-index: 5; top: 10px; float: left; margin: 10px 0 -48px 10px; }

@@ -16,6 +16,7 @@ async function bootstrap() {
     .map((origin) => origin.trim());
 
   app.use((request: Request, response: Response, next: NextFunction) => {
+    response.setHeader("Cache-Control", "no-store");
     const origin = request.headers.origin;
     const unsafe = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
     const carriesAdminCookie = request.headers.cookie?.split(";").some((cookie) => cookie.trim().startsWith("basmat_admin="));

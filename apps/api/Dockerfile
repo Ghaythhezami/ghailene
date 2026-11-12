@@ -11,4 +11,4 @@ COPY . .
 RUN npm run db:generate -w @basmat-fan/api && npm run build -w @basmat-fan/shared && npm run build -w @basmat-fan/api
 ENV NODE_ENV=production
 EXPOSE 4000
-CMD ["npm", "run", "start", "-w", "@basmat-fan/api"]
+CMD ["sh", "apps/api/start-production.sh"]

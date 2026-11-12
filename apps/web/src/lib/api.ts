@@ -1,8 +1,7 @@
 import type {
   PublicArtwork, PublicCategory, PublicFilterOptions, PublicGalleryEvent, PublicSettings,
 } from "@basmat-fan/shared";
-
-const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(/\/$/, "");
+import { apiBase } from "./api-base";
 
 export async function fetchPublicContent(searchParams: URLSearchParams = new URLSearchParams()) {
   const query = searchParams.toString();

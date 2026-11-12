@@ -15,7 +15,7 @@ async function main() {
   const passwordHash = await argon2.hash(password, { type: argon2.argon2id });
   await prisma.adminUser.upsert({
     where: { email: email.toLowerCase() },
-    update: { passwordHash, active: true },
+    update: {},
     create: { email: email.toLowerCase(), passwordHash, role: "ADMIN" },
   });
 
@@ -33,7 +33,7 @@ async function main() {
   for (const [index, [name, slug]] of initialCategories.entries()) {
     await prisma.category.upsert({
       where: { slug },
-      update: { name, sortOrder: index },
+      update: {},
       create: { name, slug, sortOrder: index },
     });
   }
