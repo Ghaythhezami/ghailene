@@ -60,13 +60,16 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
     return () => window.clearTimeout(timer);
   }, [artwork, duration, error, imageIndex, isPaused, next]);
 
-  return <section className="gallery-story" aria-label={`عرض ${category}`} aria-busy={loading}>
+  return <motion.section className="gallery-story" aria-label={`عرض ${category}`} aria-busy={loading}
+    initial={reducedMotion ? false : { opacity: 0, y: 28, scale: .97 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}>
     <div className="story-heading"><div><small>قاعات بصمة فن</small><h2>{category}</h2></div><button onClick={onClose} aria-label="العودة للملف المهني"><X size={19} /></button></div>
     {loading ? <div className="story-message" role="status">جارٍ تحميل الأعمال الفنية...</div> : error ? <div className="story-message" role="alert">تعذر تحميل الأعمال. تحقق من اتصال المعرض وحاول مرة أخرى.<button onClick={() => onPageRef.current(pagination.page)}>إعادة المحاولة</button></div> : !artwork ? <div className="story-message">لا توجد أعمال منشورة في هذا القسم بعد.</div> :
       <div className="story-body">
         <div className="story-frame">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={`${artwork.id}-${imageIndex}`} className="story-image" initial={reducedMotion ? false : { opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={reducedMotion ? undefined : { opacity: 0, x: -30 }} transition={{ duration: .38 }}>
+          <AnimatePresence initial={false}>
+            <motion.div key={`${artwork.id}-${imageIndex}`} className="story-image" initial={reducedMotion ? false : { opacity: 0, x: 35, scale: 1.025 }} animate={{ opacity: 1, x: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, x: -35, scale: .98 }} transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}>
               {image ? <Image src={image.url} alt={image.alt || artwork.title} fill sizes="(max-width: 900px) 90vw, 55vw" /> : <div className="story-placeholder"><Palette size={36} /><span>{artwork.videoUrl ? "عمل مرئي" : "عمل فني"}</span></div>}
             </motion.div>
           </AnimatePresence>
@@ -77,5 +80,5 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
         <div className="story-copy"><div><small>{artwork.studentDisplayName}{artwork.gradeName ? ` · ${artwork.gradeName}` : ""}</small><h3>{artwork.title}</h3></div><div className="story-actions"><button onClick={() => onSelect(artwork)}><Eye size={16} /> عرض العمل</button><button onClick={() => setUserPaused(!userPaused)} aria-label={userPaused ? "تشغيل العرض" : "إيقاف العرض مؤقتًا"} disabled={Boolean(reducedMotion)}>{userPaused || reducedMotion ? <Play size={16} /> : <Pause size={16} />}</button></div></div>
       </div>}
     {pagination.pages > 1 && <nav className="story-pagination" aria-label="صفحات المعرض"><button disabled={loading || pagination.page <= 1} onClick={() => onPageRef.current(pagination.page - 1)}>الصفحة السابقة</button><span>{pagination.page} / {pagination.pages}</span><button disabled={loading || pagination.page >= pagination.pages} onClick={() => onPageRef.current(pagination.page + 1)}>الصفحة التالية</button></nav>}
-  </section>;
+  </motion.section>;
 }

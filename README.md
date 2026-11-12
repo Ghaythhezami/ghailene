@@ -48,6 +48,8 @@ The API reads the root environment file when started from this workspace. Next.j
 
 On the production HTTPS site, open **أدوات المعرض** and choose **تثبيت التطبيق**, or use the browser's install option. On iOS, use Safari's Share menu and choose **Add to Home Screen**. Installation and service worker registration require HTTPS (or localhost); the service worker is enabled only in production builds. When offline, the app shows a connection notice instead of caching private data or stale gallery results.
 
+The installed app is named **MR Ghailene** and uses the teacher's photograph for its icon. Browsers and operating systems control when an existing installation updates its name and icon; if they remain unchanged, remove the old installation and install it again.
+
 ## Database and migrations
 
 The Prisma schema is `apps/api/prisma/schema.prisma`. Runtime queries use `DATABASE_URL`; Prisma migrations use `DIRECT_URL`. The initial migration enables PostgreSQL `pg_trgm` indexes for substring search. Run `npm run db:migrate` to apply reviewed migrations and `npm run db:seed` to create the initial admin, settings row, and categories. Seeding does not change an existing administrator's password or reactivate a disabled account.
@@ -79,6 +81,8 @@ Deploy the web and API as separate services; a Next.js Vercel deployment does no
 4. The Docker startup runs `npm run db:migrate`, then runs the seed when both `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set. Set them in the host's secret environment variables for the first deployment; never commit them. Existing administrators are not overwritten. Remove the bootstrap variables afterwards. If using the non-Docker start command, run migrations and the seed as controlled release/one-off jobs instead. Expose `/api/health` for health checks.
 5. Configure `WEB_ORIGIN` for the deployed web URL. When web and API are on separate sites, the admin cookie uses `SameSite=None; Secure`; both services must be HTTPS.
 6. Keep `WEB_ORIGIN` set to the exact frontend origin even when using the proxy: the API validates the browser's `Origin` on state-changing requests. Configure the proxy destination through `NEXT_PUBLIC_API_URL` and use HTTPS in production.
+
+If login reports `Request origin is not allowed`, set `WEB_ORIGIN` in the API host's environment to the exact browser origin, for example `https://mrghailenekhezami.vercel.app` (no trailing slash or path), then redeploy the API. Separate multiple trusted frontend origins with commas. A `401` from the session endpoint before login simply means there is no authenticated session.
 
 Do not commit environment files or credentials. If a Cloudinary API secret has been exposed, rotate it in Cloudinary and enter the replacement directly in the API host's secret variables.
 

@@ -5,10 +5,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "بصمة فن | معرض الإبداع الفني الرقمي",
   description: "كل طالب فنان.. وكل إبداع له بصمة. اكتشف معرض بصمة فن الرقمي.",
-  applicationName: "بصمة فن",
+  applicationName: "MR Ghailene",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "بصمة فن", statusBarStyle: "default" },
-  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "MR Ghailene", statusBarStyle: "default" },
+  icons: { icon: "/icons/mr-ghailene-192.png", apple: "/icons/mr-ghailene-apple.png" },
   openGraph: {
     title: "بصمة فن | معرض الإبداع الفني الرقمي",
     description: "من أنامل صغيرة تنطلق إبداعات كبيرة.",
