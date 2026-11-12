@@ -379,6 +379,7 @@ export default function HomePage() {
       </footer>
       <AnimatePresence>
         {selected && <ArtworkDialog artwork={selected} onClose={() => setSelected(null)} onPrevious={() => moveArtwork(-1)} onNext={() => moveArtwork(1)}
+        loading={loading} error={apiError}
         related={artworks.filter((item) => item.category.id === selected.category.id && item.id !== selected.id).slice(0, 3)}
         onSelectRelated={setSelected} />}
       </AnimatePresence>
@@ -435,7 +436,7 @@ function ArtworkCard({ artwork, index, onClick }: { artwork: PublicArtwork; inde
 }
 
 function ArtworkDialog({
-  artwork, onClose, onPrevious, onNext, related, onSelectRelated,
+  artwork, onClose, onPrevious, onNext, related, onSelectRelated, loading, error,
 }: {
   artwork: PublicArtwork;
   onClose: () => void;
@@ -443,6 +444,8 @@ function ArtworkDialog({
   onNext: () => void;
   related: PublicArtwork[];
   onSelectRelated: (artwork: PublicArtwork) => void;
+  loading: boolean;
+  error: string;
 }) {
   const [imageIndex, setImageIndex] = useState(0);
   const [zoomed, setZoomed] = useState(false);
@@ -461,7 +464,7 @@ function ArtworkDialog({
         </div>
         <div className="dialog-copy"><span className="section-kicker">{artwork.category.name}</span><h2 id="dialog-title">{artwork.title}</h2><p>{artwork.description || "عمل فني من إبداع طلابنا."}</p><dl><div><dt>الفنان</dt><dd>{artwork.studentDisplayName}</dd></div>{artwork.gradeName && <div><dt>الصف</dt><dd>{artwork.gradeName}</dd></div>}{artwork.projectName && <div><dt>المشروع</dt><dd>{artwork.projectName}</dd></div>}{artwork.materials.length > 0 && <div><dt>الخامات</dt><dd>{artwork.materials.join("، ")}</dd></div>}</dl></div>
         {image && artwork.videoUrl && <video className="dialog-video" src={artwork.videoUrl} controls playsInline aria-label={`فيديو العمل الفني: ${artwork.title}`} />}
-        <nav className="artwork-dialog-nav" aria-label="التنقل بين الأعمال"><button onClick={onPrevious}><ChevronRight size={17} /> العمل السابق</button><button onClick={onNext}>العمل التالي <ChevronLeft size={17} /></button></nav>
+        <nav className="artwork-dialog-nav" aria-label="التنقل بين الأعمال"><button disabled={loading} onClick={onPrevious}><ChevronRight size={17} /> العمل السابق</button>{loading ? <span role="status">جارٍ تحميل الأعمال...</span> : error ? <span role="alert">تعذر تحميل الأعمال. حاول مجددًا.</span> : null}<button disabled={loading} onClick={onNext}>العمل التالي <ChevronLeft size={17} /></button></nav>
         {related.length > 0 && <aside className="related-artworks"><h3>أعمال أخرى في هذا القسم</h3>{related.map((item) => <button key={item.id} onClick={() => onSelectRelated(item)}>{item.title}<ArrowUpLeft size={14} /></button>)}</aside>}
       </motion.article>
     </motion.div>

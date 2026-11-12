@@ -473,6 +473,7 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 .dialog-copy dl { border-color: #ffffff22; }.dialog-copy dl div { border-color: #ffffff22; }.dialog-copy dt { color: #d3b680; }.dialog-copy dd { color: #f8eddd; }
 .artwork-dialog-nav { min-height: 51px; align-items: center; border-color: #ffffff20; background: #191613; }
 .artwork-dialog-nav button, .related-artworks button { color: #efd092; font-size: 11px; }
+.artwork-dialog-nav button:disabled { opacity: .45; cursor: default; }.artwork-dialog-nav > span { color: #f0c995; font-size: 10px; text-align: center; }
 .related-artworks { max-height: 100px; overflow-y: auto; padding: 10px 22px; background: #191613; }.related-artworks h3 { color: #d2c2ad; }
 .dialog-video { max-height: 23svh; }
 @media (max-width: 1050px) {
