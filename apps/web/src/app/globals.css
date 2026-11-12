@@ -869,6 +869,11 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 @media (max-width: 900px) and (max-height: 760px) {
   .museum-app { grid-template-rows: minmax(0, calc(33svh + 46px)) minmax(0, 1fr) 32px; }
 }
+@media (max-width: 900px) {
+  .museum-app.museum-app-story { grid-template-rows: 66svh minmax(0, 1fr) clamp(32px, 4.5svh, 42px); }
+  .museum-app-story .museum-category-dock { grid-template-rows: minmax(24px, 3.5svh) minmax(0, 1fr); }
+  .museum-app-story .museum-category-list { gap: 3px 6px; }
+}
 
 .admin-login { display: grid; min-height: 100svh; place-items: center; padding: 28px; background: radial-gradient(ellipse at 78% 12%, #337b7a 0, transparent 39%), linear-gradient(140deg, #242624, #34332e 68%, #75583a); color: #f7f0e5; }
 .admin-brand { position: absolute; top: 28px; right: 34px; display: inline-flex; align-items: center; gap: 11px; }

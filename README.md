@@ -11,6 +11,8 @@ An Arabic, right-to-left digital art museum for مدارس الابتكارية 
 - NestJS API with request validation, Swagger docs, Helmet, CORS allow-list, rate limiting, Argon2 admin password hashes, short-lived JWT in an HttpOnly cookie, role checks, and Cloudinary uploads.
 - PostgreSQL schema, Prisma seed, Neon pooled runtime URL and direct migration URL support, and conventional Node deployment configuration.
 
+The National Day scene incorporates the Saudi flag's white emblem from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Flag_of_Saudi_Arabia.svg), marked there as public domain. Official insignia may be subject to non-copyright restrictions.
+
 ## Requirements
 
 - Node.js 20.11 or newer

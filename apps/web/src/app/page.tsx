@@ -23,7 +23,7 @@ const categoryVisuals = [
   { slug: "remote", name: "إبداعات عن بُعد", asset: "remote.webp", tint: "turquoise", note: "مساحات من الخيال" },
   { slug: "projects", name: "مشاريع فنية", asset: "projects.webp", tint: "blue", note: "أفكار كبرت معنا" },
   { slug: "founding-day", name: "يوم التأسيس", asset: "founding-day.webp", tint: "founding", note: "حكاية وطن" },
-  { slug: "national-day", name: "يوم الوطن", asset: "national-day.webp", tint: "emerald", note: "رايتنا خضراء" },
+  { slug: "national-day", name: "يوم الوطن", asset: "national-day-saudi.webp", tint: "emerald", note: "رايتنا خضراء" },
   { slug: "models", name: "عالم المجسمات", asset: "models.webp", tint: "violet", note: "أفكار ثلاثية الأبعاد" },
   { slug: "moments", name: "لحظات فنية", asset: "moments.webp", tint: "sky", note: "من يوميات المرسم" },
   { slug: "featured", name: "نجوم بصمة فن", asset: "featured.webp", tint: "amber", note: "إبداع يستحق الضوء" },
@@ -236,7 +236,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="museum-app" id="top">
+    <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""}`} id="top">
       <dialog ref={toolsDialogRef} className="museum-tools-dialog" onCancel={(event) => { event.preventDefault(); setToolsOpen(false); }} onClose={() => setToolsOpen(false)} aria-labelledby="museum-tools-title">
         <div className="museum-tools-heading"><strong id="museum-tools-title">أدوات المعرض</strong><button onClick={() => setToolsOpen(false)} aria-label="إغلاق"><X size={20} /></button></div>
         <nav className="museum-tools-nav" aria-label="التنقل الرئيسي">
@@ -340,7 +340,7 @@ export default function HomePage() {
           </motion.button>)}
           <span className="museum-gallery-hint"><Sparkles size={12} /> اختر لوحة لاكتشاف حكايتها</span>
         </aside>}
-        {apiError && <p className="museum-api-notice" role="status">{apiError}</p>}
+        {apiError && !(storyOpen && activeView === "gallery") && <p className="museum-api-notice" role="status">{apiError}</p>}
       </section>
 
       <section className="museum-category-dock" aria-label="أقسام المعرض">
