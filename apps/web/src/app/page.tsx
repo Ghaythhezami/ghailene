@@ -161,7 +161,20 @@ export default function HomePage() {
         ...category,
         tint: categoryVisuals[index % (categoryVisuals.length - 1)].tint,
       }));
-    return [...fixedCategories.slice(0, -1), ...customCategories, fixedCategories[fixedCategories.length - 1]];
+    const ordered = [
+      fixedCategories.find((item) => item.slug === "__all__"),
+      fixedCategories.find((item) => item.slug === "featured"),
+      fixedCategories.find((item) => item.slug === "exhibitions"),
+      fixedCategories.find((item) => item.slug === "founding-day"),
+      fixedCategories.find((item) => item.slug === "national-day"),
+      fixedCategories.find((item) => item.slug === "onsite"),
+      fixedCategories.find((item) => item.slug === "models"),
+      fixedCategories.find((item) => item.slug === "moments"),
+      fixedCategories.find((item) => item.slug === "remote"),
+      fixedCategories.find((item) => item.slug === "projects"),
+      ...customCategories,
+    ].filter((item): item is CategoryCard => Boolean(item));
+    return ordered.filter((item, index, list) => list.findIndex((candidate) => candidate.slug === item.slug) === index);
   }, [categories]);
 
   function galleryParams(
