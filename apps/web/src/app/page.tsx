@@ -349,6 +349,10 @@ export default function HomePage() {
           <strong>اختر قاعةً لتبدأ الحكاية</strong>
           <small>{categoryCards.length} أقسام فنية</small>
         </div>
+        <div className="museum-mobile-gallery-tabs" aria-label="عرض أقسام المعرض">
+          <button type="button" className="is-active" onClick={() => openHome()}><Grid2X2 size={15} /> جمع الفئات</button>
+          <button type="button" onClick={() => { setStoryOpen(true); setSelectedCategory(""); void loadGallery(galleryParams()); }}><ImageIcon size={15} /> المعرض الفني</button>
+        </div>
         <div className="museum-category-track">
           <div className="museum-category-list" id="category-dock" tabIndex={-1}>
             {categoryCards.map((category) => {

@@ -416,6 +416,7 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 .museum-about-mark > span { display: flex; flex-direction: column; align-items: start; gap: 3px; color: #fff0dc; font-size: 12px; }
 .museum-about-mark small { color: #dec8a8; font-size: 9px; }
 .museum-category-dock { z-index: 4; display: grid; min-height: 0; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; padding: clamp(7px, 1.2svh, 13px) clamp(13px, 3.4vw, 64px) clamp(7px, 1svh, 12px); border-top: 1px solid #f3d9a13b; background: linear-gradient(180deg, #32271feF, #211d19); box-shadow: 0 -9px 32px #160f0c5e; }
+.museum-mobile-gallery-tabs { display: none; }
 .museum-dock-heading { display: flex; min-height: 23px; align-items: center; justify-content: space-between; gap: 10px; color: #e9c987; }
 .museum-dock-heading > span { font-size: 9px; }.museum-dock-heading strong { color: #fff2de; font-size: clamp(10px, 1vw, 13px); font-weight: 650; }.museum-dock-heading small { color: #b8a589; font-size: 8px; }
 .museum-category-track { min-height: 0; padding-top: 7px; }
@@ -973,6 +974,38 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 
 /* Mobile light-art gallery: warm ivory, lavender, and champagne gold */
 @media (max-width: 900px) {
+  .museum-center,
+  .museum-hero-actions,
+  .museum-gallery-status,
+  .profile-expand { display: none !important; }
+  .museum-stage { align-content: center; }
+  .museum-mobile-gallery-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin: 2px 2px 5px;
+  }
+  .museum-mobile-gallery-tabs button {
+    display: flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid #d4c49b;
+    border-radius: 999px;
+    background: #fffdf8;
+    color: #71637d;
+    font: inherit;
+    font-size: 10px;
+  }
+  .museum-mobile-gallery-tabs button.is-active {
+    border-color: #b39958;
+    background: linear-gradient(135deg, #80619a, #67467f);
+    color: #fff;
+  }
+  .museum-category-dock {
+    grid-template-rows: clamp(24px, 3.5svh, 34px) 38px minmax(0, 1fr);
+  }
   .museum-app {
     background-color: #fdfaf4;
     background-image:
