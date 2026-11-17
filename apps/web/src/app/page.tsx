@@ -19,16 +19,16 @@ import { GalleryStory } from "@/components/gallery-story";
 const GalleryRoom = dynamic(() => import("@/components/gallery-room"), { ssr: false });
 
 const categoryVisuals = [
-  { slug: "onsite", name: "إبداعات حضورية", asset: "onsite.webp", tint: "coral", note: "ألوان من مدرستنا" },
-  { slug: "remote", name: "إبداعات عن بُعد", asset: "remote.webp", tint: "turquoise", note: "مساحات من الخيال" },
-  { slug: "projects", name: "مشاريع فنية", asset: "projects.webp", tint: "blue", note: "أفكار كبرت معنا" },
-  { slug: "founding-day", name: "يوم التأسيس", asset: "founding-day.webp", tint: "founding", note: "حكاية وطن" },
+  { slug: "onsite", name: "مبدعون صغار", asset: "onsite.webp", tint: "coral", note: "ألوان من مدرستنا" },
+  { slug: "remote", name: "إبداعات رقمية", asset: "remote.webp", tint: "turquoise", note: "مساحات من الخيال" },
+  { slug: "projects", name: "مواهب مبدعة", asset: "projects.webp", tint: "blue", note: "أفكار كبرت معنا" },
+  { slug: "founding-day", name: "صور تراثية", asset: "founding-day.webp", tint: "founding", note: "حكاية وطن" },
   { slug: "national-day", name: "يوم الوطن", asset: "national-day-saudi.webp", tint: "emerald", note: "رايتنا خضراء" },
-  { slug: "models", name: "عالم المجسمات", asset: "models.webp", tint: "violet", note: "أفكار ثلاثية الأبعاد" },
+  { slug: "models", name: "عالم الألوان", asset: "models.webp", tint: "violet", note: "ألوان وخامات بصرية" },
   { slug: "moments", name: "لحظات فنية", asset: "moments.webp", tint: "sky", note: "من يوميات المرسم" },
-  { slug: "featured", name: "نجوم بصمة فن", asset: "featured.webp", tint: "amber", note: "إبداع يستحق الضوء" },
-  { slug: "exhibitions", name: "معارضنا الفنية", asset: "exhibitions.webp", tint: "fuchsia", note: "لقاءاتنا ومعارضنا" },
-  { slug: "__all__", name: "كل المشاريع", asset: "all-projects.webp", tint: "royal", note: "كل حكاياتنا الفنية" },
+  { slug: "featured", name: "نجوم المستقبل", asset: "featured.webp", tint: "amber", note: "إبداع يستحق الضوء" },
+  { slug: "exhibitions", name: "معرض المدرسة", asset: "exhibitions.webp", tint: "fuchsia", note: "لقاءاتنا ومعارضنا" },
+  { slug: "__all__", name: "أركان المعرض", asset: "all-projects.webp", tint: "royal", note: "كل حكاياتنا الفنية" },
 ];
 type CategoryCard = PublicCategory & { asset: string; tint: string; note: string };
 
@@ -345,8 +345,8 @@ export default function HomePage() {
 
       <section className="museum-category-dock" aria-label="أقسام المعرض">
         <div className="museum-dock-heading">
-          <span>عوالم من الإبداع</span>
-          <strong>اختر قاعةً لتبدأ الحكاية</strong>
+          <span>عالم الألوان</span>
+          <strong>ابدأ استكشاف أعمالنا</strong>
           <small>{categoryCards.length} أقسام فنية</small>
         </div>
         <div className="museum-category-track">

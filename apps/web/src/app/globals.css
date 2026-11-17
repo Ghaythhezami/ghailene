@@ -420,7 +420,7 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 .museum-dock-heading { display: flex; min-height: 23px; align-items: center; justify-content: space-between; gap: 10px; color: #e9c987; }
 .museum-dock-heading > span { font-size: 9px; }.museum-dock-heading strong { color: #fff2de; font-size: clamp(10px, 1vw, 13px); font-weight: 650; }.museum-dock-heading small { color: #b8a589; font-size: 8px; }
 .museum-category-track { min-height: 0; padding-top: 7px; }
-.museum-category-list { display: grid; width: 100%; height: 100%; min-height: 0; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: clamp(5px, .75vw, 12px); outline: none; perspective: 700px; }
+.museum-category-list { display: grid; width: 100%; height: 100%; min-height: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: clamp(7px, .9vw, 13px); outline: none; perspective: 700px; direction: ltr; }
 .museum-category-tile { position: relative; display: flex; min-width: 0; min-height: 0; flex-direction: column; align-items: center; justify-content: center; gap: clamp(2px, .45svh, 6px); overflow: hidden; padding: 6px clamp(3px, .55vw, 10px); border: 1px solid var(--tile-edge); border-radius: clamp(8px, .9vw, 14px); background: var(--tile-gradient); color: #fffaf0; box-shadow: 0 7px 0 var(--tile-depth), 0 13px 20px #0c090997, 0 0 13px var(--tile-glow), inset 0 1px #ffffff9e, inset 0 -12px 22px #120f1838; text-align: center; cursor: pointer; transform-style: preserve-3d; transition: box-shadow .25s, border-color .25s, filter .25s; animation: museum-tile-rise 5s ease-in-out infinite; }
 .museum-category-tile:nth-child(3n + 2) { animation-delay: -1.65s; }.museum-category-tile:nth-child(3n) { animation-delay: -3.2s; }
 @keyframes museum-tile-rise { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3px; } }
@@ -428,10 +428,23 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 .museum-category-tile::after { position: absolute; right: 0; bottom: 0; left: 0; height: 38%; background: linear-gradient(0deg, #130e19a8, transparent); content: ""; pointer-events: none; }
 .museum-category-tile:hover, .museum-category-tile.is-selected { z-index: 1; border-color: #fff0c1; box-shadow: 0 3px 0 var(--tile-depth), 0 14px 24px #090706ae, 0 0 24px var(--tile-glow), inset 0 1px #fff; filter: saturate(1.14) brightness(1.06); }
 .museum-category-tile.is-selected { outline: 2px solid #efc36b; outline-offset: 2px; }
-.museum-tile-art { position: relative; display: block; width: clamp(54px, 9svh, 106px); height: clamp(54px, 9svh, 106px); flex: 0 1 auto; filter: drop-shadow(0 5px 7px #130d18a8); transition: transform .28s cubic-bezier(.2,.8,.2,1), filter .28s; }
-.museum-tile-art > img { object-fit: contain; }
-.museum-category-tile:hover .museum-tile-art { transform: translateY(-3px) scale(1.06); filter: drop-shadow(0 8px 11px #09070abf) saturate(1.08); }
-.museum-category-tile > strong { position: relative; z-index: 1; max-width: 100%; overflow: hidden; color: #fffaf0; font-size: clamp(8px, .82vw, 12px); font-weight: 750; line-height: 1.4; text-shadow: 0 2px 6px #160e18ad; text-overflow: ellipsis; white-space: nowrap; }
+.museum-tile-art { position: absolute; z-index: -1; inset: 0; display: block; width: 100%; height: 100%; filter: none; transition: transform .32s cubic-bezier(.2,.8,.2,1), filter .28s; }
+.museum-tile-art > img { object-fit: cover; object-position: center; }
+.museum-category-tile:hover .museum-tile-art { transform: scale(1.045); filter: saturate(1.08); }
+.museum-category-tile > strong { position: relative; z-index: 2; max-width: calc(100% - 46px); margin-right: auto; margin-left: 38px; overflow: hidden; color: #fffaf0; font-size: clamp(10px, .9vw, 14px); font-weight: 800; line-height: 1.3; text-shadow: 0 2px 8px #160e18d9; text-overflow: ellipsis; white-space: nowrap; }
+.museum-tile-arrow {
+  position: absolute;
+  z-index: 3;
+  right: 10px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e5b85d;
+  color: #fff;
+  box-shadow: 0 4px 12px #4a351ea6;
+}
 .museum-tile-index { position: absolute; z-index: 1; top: 5px; left: 6px; color: #fff9; font: 8px var(--serif); text-shadow: 0 1px 5px #140b16b8; }
 .category-coral { --tile-gradient: linear-gradient(155deg, #f68458 0%, #dc4c53 48%, #762e3a 100%); --tile-depth: #692938; --tile-edge: #ffd1a0; --tile-glow: #ff76536b; }
 .category-turquoise { --tile-gradient: linear-gradient(155deg, #56e1d3 0%, #189d9e 49%, #124f5b 100%); --tile-depth: #10424a; --tile-edge: #a4fff0; --tile-glow: #23d9cf69; }
@@ -962,6 +975,25 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
   color: #51465f;
   box-shadow: none;
 }
+.museum-profile-dialog .profile-composition-full .profile-kicker,
+.museum-profile-dialog .profile-composition-full .profile-role,
+.museum-profile-dialog .profile-composition-full .profile-details > p,
+.museum-profile-dialog .profile-composition-full .profile-vision strong,
+.museum-profile-dialog .profile-composition-full .profile-vision p,
+.museum-profile-dialog .profile-composition-full .profile-management p,
+.museum-profile-dialog .profile-composition-full .profile-management strong {
+  color: #51465f;
+}
+.museum-profile-dialog .profile-composition-full .profile-copy h2 {
+  color: #352f5a;
+}
+.museum-profile-dialog .profile-composition-full .profile-role {
+  color: #806491;
+}
+.museum-profile-dialog .profile-composition-full .profile-vision strong,
+.museum-profile-dialog .profile-composition-full .profile-management strong {
+  color: #806491;
+}
 .museum-profile-close {
   border: 1px solid #d6c49a;
   background: #fffaf1;
@@ -1311,6 +1343,27 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
     background: linear-gradient(120deg, #fffdf8, #f4eddf);
     color: #51465f;
     box-shadow: 0 5px 14px #80698e1f;
+  }
+  .museum-tile-art {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .museum-tile-art > img {
+    object-fit: cover;
+  }
+  .museum-category-tile > strong {
+    max-width: calc(100% - 42px);
+    margin-inline: auto 34px;
+    color: #fff;
+    font-size: clamp(9px, 1.7svh, 13px);
+  }
+  .museum-tile-arrow {
+    right: 7px;
+    width: clamp(24px, 4svh, 30px);
+    height: clamp(24px, 4svh, 30px);
   }
   .museum-category-tile.is-selected {
     border-color: #c7a95a;
