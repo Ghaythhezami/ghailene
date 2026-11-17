@@ -982,18 +982,48 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
   .museum-category-dock {
     grid-template-rows: clamp(24px, 3.5svh, 34px) minmax(0, 1fr);
   }
+  .museum-app::before {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 44svh;
+    content: "";
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 9% 19%, #fff2 0 8%, transparent 9%),
+      radial-gradient(ellipse at 94% 15%, #b68bcf34 0 13%, transparent 14%),
+      radial-gradient(ellipse at 31% 92%, #d6bd7a31 0 13%, transparent 14%),
+      linear-gradient(145deg, transparent 0 7%, #c9a2d6ad 7.5% 12%, transparent 12.5% 20%, #a278b8a8 20.5% 25%, transparent 25.5% 33%, #f1deacb8 33.5% 37%, transparent 37.5%);
+    opacity: 1;
+  }
+  .museum-app::after {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    right: -16%;
+    width: 58%;
+    height: 38svh;
+    content: "";
+    pointer-events: none;
+    border-radius: 58% 42% 65% 35%;
+    background: linear-gradient(135deg, #fffaf1 8%, #eadcf2 48%, #cbaecf 72%, transparent 73%);
+    opacity: .7;
+    transform: rotate(-10deg);
+  }
   .museum-app {
     background-color: #fdfaf4;
     background-image:
       radial-gradient(circle at 12% 8%, #a988c54a 0 6%, transparent 7%),
       radial-gradient(circle at 92% 12%, #d7b66d38 0 5%, transparent 6%),
-      linear-gradient(145deg, #fffdf8 0%, #f8f1fb 52%, #fffaf1 100%);
+      linear-gradient(145deg, #fdf8ed 0%, #f7eff8 48%, #fffaf1 100%);
     color: #302b38;
   }
   .museum-stage {
     background:
-      radial-gradient(ellipse at 55% 35%, #ffffffad 0 25%, transparent 60%),
-      linear-gradient(135deg, #fbf8f0a8, #f3ebf8a8);
+      radial-gradient(ellipse at 55% 35%, #fffaf1d9 0 25%, transparent 60%),
+      linear-gradient(135deg, #fbf6ecbb, #eee3f3bb);
   }
   .museum-scene,
   .museum-scene-shade,
