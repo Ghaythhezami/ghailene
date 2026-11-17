@@ -984,7 +984,7 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
   }
   .museum-app::before {
     position: absolute;
-    z-index: 0;
+    z-index: -2;
     top: 0;
     right: 0;
     left: 0;
@@ -1000,7 +1000,7 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
   }
   .museum-app::after {
     position: absolute;
-    z-index: 0;
+    z-index: -2;
     top: 0;
     right: -16%;
     width: 58%;
@@ -1021,6 +1021,8 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
     color: #302b38;
   }
   .museum-stage {
+    position: relative;
+    z-index: 1;
     background:
       radial-gradient(ellipse at 55% 35%, #fffaf1d9 0 25%, transparent 60%),
       linear-gradient(135deg, #fbf6ecbb, #eee3f3bb);
@@ -1030,6 +1032,8 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
   .museum-stage::before { opacity: .28; }
 
   .profile-composition:not(.profile-composition-full) {
+    position: relative;
+    z-index: 5;
     width: calc(100% - 16px);
     max-height: calc(100% - 28px);
     padding: 7px 10px 9px;
