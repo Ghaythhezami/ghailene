@@ -784,7 +784,23 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 .profile-management svg { flex: 0 0 auto; color: #e8bc66; }
 .profile-management span { display: flex; flex-direction: column; gap: 2px; }
 .profile-management strong { color: #efc982; }
-.profile-expand { display: none; }
+.profile-expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1px solid #d2b56f;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #634a76;
+  font: inherit;
+  font-size: 11px;
+  box-shadow: 0 5px 14px #80698e24;
+  cursor: pointer;
+}
 .museum-open-tools { position: absolute; z-index: 6; top: 12px; left: 16px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid #e6bd77a6; border-radius: 24px; background: #261b19e8; color: #fff1d9; font: inherit; font-size: 11px; cursor: pointer; }
 .museum-tools-dialog, .museum-profile-dialog { position: fixed; z-index: 20; max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); margin: auto; border: 1px solid #d9b36b; border-radius: 18px; background: #251a19f7; color: #fff1df; box-shadow: 0 24px 70px #000b; }
 .museum-tools-dialog::backdrop, .museum-profile-dialog::backdrop { background: #09070bd9; backdrop-filter: blur(5px); }
@@ -831,6 +847,128 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 .museum-profile-dialog { width: min(580px, calc(100vw - 24px)); padding: 0; overflow-y: auto; }
 .museum-profile-dialog .profile-composition { max-height: none; border: 0; box-shadow: none; }
 .museum-profile-close { position: sticky; z-index: 5; top: 10px; float: left; margin: 10px 0 -48px 10px; }
+
+@media (min-width: 901px) {
+  .museum-app {
+    background-color: #fdfaf4;
+    background-image:
+      radial-gradient(circle at 12% 10%, #a988c533 0 7%, transparent 8%),
+      radial-gradient(circle at 88% 14%, #d7b66d38 0 7%, transparent 8%),
+      linear-gradient(145deg, #fdf8ed 0%, #f8f1f8 52%, #fffaf1 100%);
+    color: #302b38;
+  }
+  .museum-header {
+    border-bottom: 1px solid #ddd0ae;
+    background: rgba(255, 253, 248, .94);
+    box-shadow: 0 8px 28px #80698e1f;
+  }
+  .museum-brand-lockup { color: #4d405c; }
+  .museum-brand-lockup small { color: #9a895f; }
+  .museum-nav { border-color: #ddd0ae; background: #f7f1e7; }
+  .museum-nav button { color: #686072; }
+  .museum-nav button.is-active { background: #80619a; color: #fff; }
+  .museum-filter-toggle,
+  .museum-search,
+  .museum-admin-link {
+    border-color: #ddd0ae;
+    background: #fffaf1;
+    color: #665574;
+  }
+  .museum-stage {
+    background:
+      radial-gradient(ellipse at 50% 45%, #ffffffd9 0 25%, transparent 62%),
+      linear-gradient(135deg, #faf6edcc, #f2eaf5cc);
+  }
+  .museum-scene-shade,
+  .museum-stage::before { opacity: .18; }
+  .museum-category-dock {
+    border-top: 1px solid #d8c69c;
+    background: linear-gradient(180deg, #fffdf8, #faf6ec);
+    box-shadow: 0 -10px 28px #80698e20;
+  }
+  .museum-dock-heading,
+  .museum-dock-heading strong { color: #5b456f; }
+  .museum-dock-heading > span,
+  .museum-dock-heading small { color: #9a895f; }
+  .museum-category-tile {
+    border: 1px solid #dcd0af;
+    background: linear-gradient(120deg, #fffdf8, #f4eddf);
+    color: #51465f;
+    box-shadow: 0 6px 16px #80698e26;
+  }
+  .museum-category-tile.is-selected {
+    border-color: #c7a95a;
+    outline-color: #c7a95a;
+    background: linear-gradient(120deg, #f7eefb, #fffaf0);
+  }
+  .museum-category-tile > strong { text-shadow: none; }
+  .museum-category-tile::after {
+    background: linear-gradient(90deg, transparent 20%, #fffaf5e6 78%);
+  }
+  .museum-tile-arrow {
+    background: #c8a95c;
+    color: #fff;
+  }
+  .museum-footer {
+    border-top: 1px solid #d8c69c;
+    background: linear-gradient(100deg, #fffaf1, #f4edf8 58%, #fffaf1);
+  }
+  .museum-footer-message,
+  .museum-footer-brand strong,
+  .museum-footer-brand small { color: #665673; }
+  .museum-footer-skyline { opacity: .75; }
+  .profile-composition:not(.profile-composition-full) {
+    border: 1px solid #dfca98;
+    background: rgba(255, 253, 248, .96);
+    box-shadow: 0 18px 44px #80698e2b, inset 0 1px #fff;
+  }
+  .profile-portrait {
+    border-color: #d6bd76;
+    border-radius: 18px;
+    box-shadow: 0 0 0 2px #fff, 0 8px 20px #80698e38;
+  }
+  .profile-kicker,
+  .profile-role,
+  .profile-vision strong,
+  .profile-management strong { color: #806491; }
+  .profile-copy h2 { color: #352f5a; }
+  .profile-copy,
+  .profile-details > p,
+  .profile-vision p,
+  .profile-management p { color: #554f62; }
+  .profile-vision,
+  .profile-management { border-top-color: #d9c9a9; }
+}
+
+.museum-profile-dialog {
+  overflow: hidden;
+  border: 1px solid #d8c69c;
+  background: #fffdf8;
+  color: #51465f;
+  box-shadow: 0 28px 90px #80698e55;
+}
+.museum-profile-dialog::backdrop {
+  background: #4b3d5480;
+  backdrop-filter: blur(8px);
+}
+.museum-profile-dialog .profile-composition-full {
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  border: 0;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 88% 8%, #d8c5e46b 0 12%, transparent 13%),
+    linear-gradient(145deg, #fffdf8, #f9f3ed);
+  color: #51465f;
+  box-shadow: none;
+}
+.museum-profile-close {
+  border: 1px solid #d6c49a;
+  background: #fffaf1;
+  color: #74528f;
+  box-shadow: 0 5px 14px #80698e24;
+}
+
 @media (max-width: 900px) {
   .museum-app { grid-template-rows: 41svh minmax(0, 1fr) clamp(34px, 4.5svh, 42px); transition: grid-template-rows .65s cubic-bezier(.22, 1, .36, 1); }
   .museum-stage { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 5px 10px; }
@@ -976,8 +1114,7 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
 @media (max-width: 900px) {
   .museum-center,
   .museum-hero-actions,
-  .museum-gallery-status,
-  .profile-expand { display: none !important; }
+  .museum-gallery-status { display: none !important; }
   .museum-stage { align-content: center; }
   .museum-category-dock {
     grid-template-rows: clamp(24px, 3.5svh, 34px) minmax(0, 1fr);
@@ -1091,9 +1228,13 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
     color: #c39b49;
   }
   .profile-expand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid #d4b86f;
     background: #74528f;
     color: #fff;
+    margin-inline: auto;
   }
 
   .museum-open-tools {
