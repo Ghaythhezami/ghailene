@@ -970,3 +970,200 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
   .overview-lower { gap: 10px; margin-top: 10px; }.admin-panel { padding: 15px 12px; }.management-grid { gap: 10px; }.edit-form .form-grid, .settings-form .form-grid { grid-template-columns: 1fr; }.span-two { grid-column: auto; }.settings-form .panel-title { align-items: start; flex-direction: column; gap: 4px; }.settings-form .panel-title p { margin: 0; }.settings-form .admin-submit { width: 100%; }
   .login-card { padding: 27px 22px; }.admin-brand { top: 17px; right: 17px; }.login-footnote { right: 20px; left: 20px; text-align: center; }
 }
+
+/* Mobile light-art gallery: warm ivory, lavender, and champagne gold */
+@media (max-width: 900px) {
+  .museum-app {
+    background-color: #fdfaf4;
+    background-image:
+      radial-gradient(circle at 12% 8%, #a988c54a 0 6%, transparent 7%),
+      radial-gradient(circle at 92% 12%, #d7b66d38 0 5%, transparent 6%),
+      linear-gradient(145deg, #fffdf8 0%, #f8f1fb 52%, #fffaf1 100%);
+    color: #302b38;
+  }
+  .museum-stage {
+    background:
+      radial-gradient(ellipse at 55% 35%, #ffffffad 0 25%, transparent 60%),
+      linear-gradient(135deg, #fbf8f0a8, #f3ebf8a8);
+  }
+  .museum-scene,
+  .museum-scene-shade,
+  .museum-stage::before { opacity: .28; }
+
+  .profile-composition:not(.profile-composition-full) {
+    width: calc(100% - 16px);
+    max-height: calc(100% - 28px);
+    padding: 7px 10px 9px;
+    border: 1px solid #dfca98;
+    border-radius: 22px;
+    background: rgba(255, 253, 248, .94);
+    box-shadow: 0 10px 30px #7b5e9030, inset 0 1px #fff;
+    color: #302b38;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-logos {
+    height: clamp(40px, 6.2svh, 58px);
+    margin-bottom: 5px;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-logos img {
+    filter: saturate(.92);
+  }
+  .profile-composition:not(.profile-composition-full) .profile-logos > span {
+    background: linear-gradient(transparent, #d3b86d, transparent);
+  }
+  .profile-composition:not(.profile-composition-full) .profile-main {
+    grid-template-columns: .82fr 1.18fr;
+    gap: 10px;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-portrait {
+    grid-column: 1;
+    max-width: min(23svh, 165px);
+    border: 4px solid #e8c977;
+    border-radius: 18px;
+    background: #efe7df;
+    box-shadow: 0 0 0 2px #fff, 0 8px 18px #80698e38;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-copy {
+    grid-column: 2;
+    color: #302b38;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-kicker {
+    color: #9a7e45;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-copy h2 {
+    color: #352f5a;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-role {
+    color: #8d70a7;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-management {
+    border-top: 1px solid #d9c9a9;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-management p {
+    color: #554f62;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-management strong {
+    color: #806491;
+  }
+  .profile-composition:not(.profile-composition-full) .profile-management svg {
+    color: #c39b49;
+  }
+  .profile-expand {
+    border: 1px solid #d4b86f;
+    background: #74528f;
+    color: #fff;
+  }
+
+  .museum-open-tools {
+    border: 1px solid #d4bf86;
+    background: #fffaf1;
+    color: #5a4a69;
+    box-shadow: 0 5px 16px #74528f24;
+  }
+  .museum-center {
+    width: min(74%, 500px);
+  }
+  .museum-center::before { display: none; }
+  .museum-eyebrow {
+    border: 1px solid #d8c89a;
+    background: #fffaf0;
+    color: #715d3c;
+    box-shadow: 0 5px 16px #b39c7630;
+  }
+  .museum-center > h1 {
+    color: #352f5a;
+    text-shadow: none;
+  }
+  .museum-subtitle {
+    color: #72578a;
+    text-shadow: none;
+  }
+  .museum-gold-rule {
+    background: linear-gradient(90deg, transparent, #c9a95e 20%, #c9a95e 80%, transparent);
+    box-shadow: none;
+  }
+  .museum-description {
+    color: #625c6a;
+    text-shadow: none;
+  }
+  .museum-primary-button {
+    border: 1px solid #6a4d84;
+    background: linear-gradient(135deg, #80619a, #66477f);
+    box-shadow: 0 5px 14px #80619a38;
+  }
+  .museum-secondary-button {
+    border-color: #d1b56e;
+    background: #fffaf1;
+    color: #674e7d;
+    box-shadow: 0 4px 12px #ad9a7138;
+  }
+
+  .museum-category-dock {
+    border-top: 1px solid #d8c69c;
+    border-radius: 26px 26px 0 0;
+    background: linear-gradient(180deg, #fffdf8, #faf6ec);
+    box-shadow: 0 -10px 28px #80698e20, inset 0 1px #fff;
+  }
+  .museum-category-dock::before {
+    background: linear-gradient(90deg, transparent, #dfc98f, #a66fbd, #dfc98f, transparent);
+  }
+  .museum-dock-heading::before {
+    background: linear-gradient(90deg, transparent, #d6c39a, #dfc98f, #d6c39a, transparent);
+  }
+  .museum-dock-heading strong {
+    background: #fffdf8;
+    color: #5b456f;
+  }
+  .museum-dock-heading > span,
+  .museum-dock-heading small {
+    color: #9a895f;
+  }
+  .museum-category-list {
+    direction: ltr;
+  }
+  .museum-category-tile {
+    min-height: 48px;
+    border: 1px solid #dcd0af;
+    border-radius: 14px;
+    background: linear-gradient(120deg, #fffdf8, #f4eddf);
+    color: #51465f;
+    box-shadow: 0 5px 14px #80698e1f;
+  }
+  .museum-category-tile.is-selected {
+    border-color: #c7a95a;
+    background: linear-gradient(120deg, #f7eefb, #fffaf0);
+    box-shadow: 0 6px 16px #80698e2e, inset 0 0 0 1px #e3c985;
+  }
+  .museum-category-tile::after {
+    background: linear-gradient(90deg, transparent 20%, #fffaf5e6 78%);
+  }
+  .museum-category-tile > strong {
+    color: #51465f;
+    text-shadow: none;
+  }
+  .museum-tile-art {
+    border-radius: 11px;
+    opacity: .84;
+  }
+  .museum-tile-arrow {
+    display: grid;
+    background: #c8a95c;
+    color: #fff;
+    box-shadow: 0 3px 8px #9d86543d;
+  }
+
+  .museum-footer {
+    border-top: 1px solid #d8c69c;
+    border-radius: 22px 22px 0 0;
+    background: linear-gradient(100deg, #fffaf1, #f4edf8 58%, #fffaf1);
+  }
+  .museum-footer-message {
+    color: #806491;
+  }
+  .museum-footer-brand strong,
+  .museum-footer-brand small {
+    color: #665673;
+  }
+  .museum-footer-skyline {
+    opacity: .75;
+  }
+}
