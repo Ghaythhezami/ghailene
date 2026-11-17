@@ -979,32 +979,8 @@ footer > a { display: flex; align-items: center; gap: 6px; font-size: 10px; }
   .museum-gallery-status,
   .profile-expand { display: none !important; }
   .museum-stage { align-content: center; }
-  .museum-mobile-gallery-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-    margin: 2px 2px 5px;
-  }
-  .museum-mobile-gallery-tabs button {
-    display: flex;
-    min-height: 34px;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    border: 1px solid #d4c49b;
-    border-radius: 999px;
-    background: #fffdf8;
-    color: #71637d;
-    font: inherit;
-    font-size: 10px;
-  }
-  .museum-mobile-gallery-tabs button.is-active {
-    border-color: #b39958;
-    background: linear-gradient(135deg, #80619a, #67467f);
-    color: #fff;
-  }
   .museum-category-dock {
-    grid-template-rows: clamp(24px, 3.5svh, 34px) 38px minmax(0, 1fr);
+    grid-template-rows: clamp(24px, 3.5svh, 34px) minmax(0, 1fr);
   }
   .museum-app {
     background-color: #fdfaf4;
