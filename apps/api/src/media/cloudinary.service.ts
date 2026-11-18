@@ -26,17 +26,26 @@ export class CloudinaryService {
       api_secret: this.config.getOrThrow<string>("CLOUDINARY_API_SECRET"),
       secure: true,
     });
-    const result = await new Promise<UploadApiResponse>((resolve, reject) => {
-      const upload = client.uploader.upload_stream(
-        { folder, resource_type: resourceType, ...(resourceType === "image" ? { quality: "auto", fetch_format: "auto" } : {}) },
-        (error, response) => {
-          if (error) reject(error);
-          else if (response) resolve(response);
-          else reject(new Error("Cloudinary returned an empty upload response."));
-        },
-      );
-      Readable.from([buffer]).pipe(upload);
-    });
+    let result: UploadApiResponse;
+    try {
+      result = await new Promise<UploadApiResponse>((resolve, reject) => {
+        const upload = client.uploader.upload_stream(
+          { folder, resource_type: resourceType, ...(resourceType === "image" ? { quality: "auto", fetch_format: "auto" } : {}) },
+          (error, response) => {
+            if (error) reject(error);
+            else if (response) resolve(response);
+            else reject(new Error("Cloudinary returned an empty upload response."));
+          },
+        );
+        Readable.from([buffer]).pipe(upload);
+      });
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "message" in error &&
+        typeof error.message === "string" && /invalid signature/i.test(error.message)) {
+        throw new ServiceUnavailableException("تعذر رفع الصورة: تحقق من اسم السحابة ومفتاح API والسر في إعدادات Cloudinary على الخادم.");
+      }
+      throw error;
+    }
     return { url: result.secure_url, publicId: result.public_id, resourceType: result.resource_type, format: result.format, bytes: result.bytes };
   }
 

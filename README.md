@@ -62,6 +62,10 @@ For schema changes during development, use Prisma Migrate to create and review m
 
 The API accepts JPEG, PNG, WebP, MP4, and WebM files through the authenticated `/api/admin/media/upload` endpoint. Files go to Cloudinary; images are limited to 10 MB, video to 50 MB. Artwork metadata and Cloudinary public IDs are stored in PostgreSQL. Deleting an artwork removes associated Cloudinary media and database records. Cloudinary credentials are server-only.
 
+In the admin, selecting a photo previews it and uploads it before the artwork is saved. If the upload fails, retry it before saving. An uploaded photo that is replaced or abandoned before saving remains in Cloudinary and can be removed from its media library.
+
+If Cloudinary reports `Invalid Signature`, check that Render's `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` belong to the same Cloudinary product environment, then restart or redeploy the API. Rotate any secret that has been disclosed and enter its replacement directly in Render.
+
 Set a student's `anonymous` flag when their published artwork must not expose their full name. Public API queries include only `PUBLISHED` artwork and return the anonymous label when that flag is enabled. Confirm school consent requirements before publishing student work, photos, or identifying information.
 
 ## Deployment

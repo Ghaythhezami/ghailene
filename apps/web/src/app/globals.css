@@ -1852,6 +1852,10 @@ html, body { height: auto; overflow-x: clip; overflow-y: auto; overscroll-behavi
 .simple-admin-list article div { display: grid; min-width: 0; flex: 1; gap: 5px; }
 .simple-admin-list small { color: #8065a2; }
 .simple-admin-list button { min-height: 44px; padding: 8px 12px; border: 0; border-radius: 12px; background: #f2e7ff; color: #6332a4; cursor: pointer; }
+.admin-photo-preview { display: flex; align-items: center; gap: 14px; margin: 16px 0; padding: 12px; border-radius: 16px; background: #f7f0ff; color: #4e2785; }
+.admin-photo-preview img { width: 96px; height: 96px; flex: 0 0 96px; border-radius: 12px; object-fit: cover; }
+.admin-photo-preview p { margin: 5px 0; font-size: 13px; }
+.admin-photo-preview button { min-height: 36px; padding: 5px 12px; border: 0; border-radius: 12px; background: #e8d8ff; color: #5825a0; font: inherit; cursor: pointer; }
 @keyframes playful-float { 50% { transform: translateY(-7px) rotate(3deg); } }
 @media (max-width: 600px) {
   .museum-stage, .museum-stage:not(:has(.museum-featured)) { padding: 70px 14px 20px; }
