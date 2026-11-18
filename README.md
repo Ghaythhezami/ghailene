@@ -5,6 +5,7 @@ An Arabic, right-to-left digital art museum for مدارس الابتكارية 
 ## What is included
 
 - Single-screen, responsive Arabic homepage with school/company marks and teacher portrait supplied for the project. Additional categories are accessible through the category page controls.
+- An eight-second cinematic welcome plays once per browser session, can be skipped, and can be replayed from **أدوات المعرض**. Reduced-motion preferences show the composition without animation.
 - Installable progressive web app, with an offline connection notice; live gallery content still requires an internet connection.
 - Searchable, published-only public gallery with animated category stories, 3-second multi-image slides and 4-second single-image works, server-backed pagination, artwork details, student privacy labels, and a lightweight Three.js gallery-room scene. Auto-advance pauses for dialogs, hidden tabs, and reduced-motion preferences.
 - Separate `/admin` area for signing in and adding, editing, or deleting a category's artwork with text, a photo, and a display order.

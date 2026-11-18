@@ -15,6 +15,7 @@ import type {
 import { fetchPublicContent } from "@/lib/api";
 import { InstallAppButton } from "@/components/install-app-button";
 import { GalleryStory } from "@/components/gallery-story";
+import { CinematicIntro } from "@/components/CinematicIntro";
 
 const GalleryRoom = dynamic(() => import("@/components/gallery-room"), { ssr: false });
 
@@ -48,6 +49,7 @@ const defaultSettings: PublicSettings = {
 
 export default function HomePage() {
   const reduceMotion = useReducedMotion();
+  const [introOpen, setIntroOpen] = useState(false);
   const [settings, setSettings] = useState(defaultSettings);
   const [categories, setCategories] = useState<PublicCategory[]>([]);
   const [categoryPage, setCategoryPage] = useState(0);
@@ -74,6 +76,24 @@ export default function HomePage() {
   const galleryRequest = useRef(0);
   const selectedRef = useRef<PublicArtwork | null>(null);
   selectedRef.current = selected;
+
+  useEffect(() => {
+    try {
+      if (!sessionStorage.getItem("basmat-cinematic-intro")) setIntroOpen(true);
+    } catch (error) {
+      console.warn("Unable to read intro session preference:", error);
+      setIntroOpen(true);
+    }
+  }, []);
+
+  const finishIntro = useCallback(() => {
+    try {
+      sessionStorage.setItem("basmat-cinematic-intro", "seen");
+    } catch (error) {
+      console.warn("Unable to save intro session preference:", error);
+    }
+    setIntroOpen(false);
+  }, []);
 
   const loadGallery = useCallback(async (query: URLSearchParams = new URLSearchParams(), selectPage?: { side: "first" | "last"; currentId: string }) => {
     const requestId = ++galleryRequest.current;
@@ -257,6 +277,7 @@ export default function HomePage() {
 
   return (
     <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""} ${activeView !== "gallery" ? "museum-app-panel" : ""}`} id="top">
+      {introOpen && <CinematicIntro onFinish={finishIntro} />}
       <dialog ref={toolsDialogRef} className="museum-tools-dialog" onCancel={(event) => { event.preventDefault(); setToolsOpen(false); }} onClose={() => setToolsOpen(false)} aria-labelledby="museum-tools-title">
         <div className="museum-tools-heading"><strong id="museum-tools-title">أدوات المعرض</strong><button onClick={() => setToolsOpen(false)} aria-label="إغلاق"><X size={20} /></button></div>
         <nav className="museum-tools-nav" aria-label="التنقل الرئيسي">
@@ -272,6 +293,7 @@ export default function HomePage() {
           </form>
           <button onClick={() => { setActiveView("gallery"); setFiltersOpen(true); setToolsOpen(false); }}><Filter size={16} /> تصفية الأعمال</button>
           <button onClick={() => { setToolsOpen(false); if (artworks[0]) setSelected(artworks[0]); }} disabled={!artworks.length}><CirclePlay size={16} /> مشاهدة الإبداعات</button>
+          <button onClick={() => { toolsDialogRef.current?.close(); setToolsOpen(false); setIntroOpen(true); }}><CirclePlay size={16} /> إعادة العرض</button>
           <a href="/admin"><Grid2X2 size={16} /> لوحة التحكم</a>
           <InstallAppButton />
         </div>
