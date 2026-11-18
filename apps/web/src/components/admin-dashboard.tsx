@@ -13,6 +13,7 @@ type Artwork = {
   images: Array<{ url: string; publicId: string; alt: string | null; sortOrder: number }>;
 };
 type UploadResult = { url: string; publicId: string };
+type Feedback = { id: string; name: string; message: string; approved: boolean };
 
 export default function AdminDashboard() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -20,6 +21,7 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [editing, setEditing] = useState<Artwork | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -65,12 +67,14 @@ export default function AdminDashboard() {
 
   const load = useCallback(async () => {
     try {
-      const [nextCategories, nextArtworks] = await Promise.all([
+      const [nextCategories, nextArtworks, nextFeedback] = await Promise.all([
         adminRequest<Category[]>("/admin/categories"),
         adminRequest<Artwork[]>("/admin/artworks"),
+        adminRequest<Feedback[]>("/admin/feedback"),
       ]);
       setCategories(nextCategories);
       setArtworks(nextArtworks);
+      setFeedback(nextFeedback);
     } catch (requestError) {
       if (requestError instanceof AdminRequestError && requestError.status === 401) setAuthenticated(false);
       else setError(requestError instanceof Error ? requestError.message : "تعذر تحميل بيانات لوحة الإدارة.");
@@ -158,6 +162,19 @@ export default function AdminDashboard() {
     } finally { setBusy(false); }
   }
 
+  async function moderate(item: Feedback, removeItem: boolean) {
+    if (removeItem && !window.confirm("هل تريد حذف هذا الرأي؟")) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await adminRequest(`/admin/feedback/${item.id}`, removeItem
+        ? { method: "DELETE" }
+        : { method: "PATCH", body: JSON.stringify({ approved: !item.approved }) });
+      await load();
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "تعذرت مراجعة الرأي.");
+    } finally { setBusy(false); }
+  }
+
   if (!authenticated) return (
     <main className="admin-login">
       <a className="admin-brand" href="/"><span className="admin-brand-icon"><Palette size={22} /></span><span><strong>بصمة فن</strong><small>إدارة المعرض</small></span></a>
@@ -209,6 +226,15 @@ export default function AdminDashboard() {
             <button type="button" onClick={() => void remove(artwork)} disabled={busy || uploading} aria-label={`حذف ${artwork.title}`}><Trash2 size={18} /></button>
           </article>)}
         </div>
+        <section className="simple-admin-list" aria-label="مراجعة آراء الزوار">
+          <h2>آراء الزوار</h2>
+          {feedback.length === 0 && <p>لا توجد آراء للمراجعة.</p>}
+          {feedback.map((item) => <article key={item.id}>
+            <div><strong>{item.name}</strong><span>{item.message}</span><small>{item.approved ? "منشور" : "بانتظار المراجعة"}</small></div>
+            <button type="button" disabled={busy} onClick={() => void moderate(item, false)}>{item.approved ? "إخفاء" : "نشر"}</button>
+            <button type="button" disabled={busy} onClick={() => void moderate(item, true)}>حذف</button>
+          </article>)}
+        </section>
       </section>
     </main>
   );

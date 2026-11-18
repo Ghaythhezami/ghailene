@@ -171,3 +171,18 @@ model WebsiteSettings {
   organizationLogoPublicId String?
   updatedAt           DateTime @updatedAt
 }
+
+model VisitorCounter {
+  id    String @id @default("main")
+  count Int    @default(0)
+}
+
+model VisitorFeedback {
+  id        String   @id @default(cuid())
+  name      String
+  message   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([approved, createdAt])
+}

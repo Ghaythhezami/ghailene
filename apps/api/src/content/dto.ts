@@ -1,9 +1,21 @@
 import { PublicationStatus } from "@prisma/client";
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
-  ArrayMaxSize, IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsOptional, IsString, IsUrl, Min, MinLength,
+  ArrayMaxSize, IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsOptional, IsString, IsUrl, MaxLength, Min, MinLength,
   ValidateNested,
 } from "class-validator";
+
+export class CreateFeedbackDto {
+  @Transform(({ value }) => typeof value === "string" ? value.trim() : value)
+  @IsString() @MinLength(1) @MaxLength(60) name!: string;
+
+  @Transform(({ value }) => typeof value === "string" ? value.trim() : value)
+  @IsString() @MinLength(1) @MaxLength(500) message!: string;
+}
+
+export class ModerateFeedbackDto {
+  @IsBoolean() approved!: boolean;
+}
 
 export class ArtworkImageDto {
   @IsUrl({ require_tld: false })

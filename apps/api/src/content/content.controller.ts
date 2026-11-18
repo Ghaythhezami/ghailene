@@ -3,6 +3,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 import { Prisma, PublicationStatus } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
@@ -13,6 +14,7 @@ import {
   CreateArtworkDto, CreateCategoryDto, CreateProjectDto, CreateStudentDto, UpdateArtworkDto,
   UpdateCategoryDto, UpdateProjectDto, UpdateStudentDto, UpdateWebsiteSettingsDto, CreateGradeDto,
   UpdateGradeDto, CreateSchoolClassDto, UpdateSchoolClassDto, CreateGalleryEventDto, UpdateGalleryEventDto,
+  CreateFeedbackDto, ModerateFeedbackDto,
 } from "./dto";
 
 const publicArtworkInclude = {
@@ -37,6 +39,30 @@ function makeUniqueSlug(input: string) {
 @Controller("public")
 export class PublicContentController {
   constructor(private readonly prisma: PrismaService) {}
+
+  @Post("visits")
+  async visit() {
+    const rows = await this.prisma.$queryRaw<{ count: number }[]>`
+      INSERT INTO "VisitorCounter" ("id", "count") VALUES ('main', 1)
+      ON CONFLICT ("id") DO UPDATE SET "count" = "VisitorCounter"."count" + 1
+      RETURNING "count"`;
+    return rows[0];
+  }
+
+  @Get("feedback")
+  feedback() {
+    return this.prisma.visitorFeedback.findMany({
+      where: { approved: true }, orderBy: { createdAt: "desc" }, take: 3,
+      select: { id: true, name: true, message: true, createdAt: true },
+    });
+  }
+
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
+  @Post("feedback")
+  async submitFeedback(@Body() body: CreateFeedbackDto) {
+    await this.prisma.visitorFeedback.create({ data: body });
+    return { submitted: true };
+  }
 
   @Get("gallery")
   async gallery(
@@ -163,6 +189,22 @@ export class ContentController {
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
   ) {}
+
+  @Get("feedback")
+  listFeedback() {
+    return this.prisma.visitorFeedback.findMany({ orderBy: [{ approved: "asc" }, { createdAt: "desc" }] });
+  }
+
+  @Patch("feedback/:id")
+  moderateFeedback(@Param("id") id: string, @Body() body: ModerateFeedbackDto) {
+    return this.prisma.visitorFeedback.update({ where: { id }, data: { approved: body.approved } });
+  }
+
+  @Delete("feedback/:id")
+  async deleteFeedback(@Param("id") id: string) {
+    await this.prisma.visitorFeedback.delete({ where: { id } });
+    return { deleted: true };
+  }
 
   @Get("overview")
   async overview() {

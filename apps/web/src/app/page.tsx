@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  ArrowUpLeft, BookOpen, ChevronLeft, ChevronRight,
+  ArrowUpLeft, BookOpen, ChevronDown, ChevronLeft, ChevronRight,
   CirclePlay, Eye, Filter, Grid2X2, Image as ImageIcon,
   Palette, Search, Sparkles, Star, UserRound, X,
 } from "lucide-react";
@@ -16,6 +16,7 @@ import { fetchPublicContent } from "@/lib/api";
 import { InstallAppButton } from "@/components/install-app-button";
 import { GalleryStory } from "@/components/gallery-story";
 import { CinematicIntro } from "@/components/CinematicIntro";
+import { VisitorFeedback } from "@/components/visitor-feedback";
 
 const GalleryRoom = dynamic(() => import("@/components/gallery-room"), { ssr: false });
 
@@ -59,6 +60,9 @@ export default function HomePage() {
   const [selected, setSelected] = useState<PublicArtwork | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [storyOpen, setStoryOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
+  const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [search, setSearch] = useState("");
   const [gradeFilter, setGradeFilter] = useState("");
   const [classFilter, setClassFilter] = useState("");
@@ -138,6 +142,7 @@ export default function HomePage() {
   }
 
   useEffect(() => { void loadGallery(); }, [loadGallery]);
+  useEffect(() => () => { if (transitionTimer.current) clearTimeout(transitionTimer.current); }, []);
   useEffect(() => {
     const dialog = toolsDialogRef.current;
     if (toolsOpen && dialog && !dialog.open) dialog.showModal();
@@ -233,10 +238,14 @@ export default function HomePage() {
   }
 
   function focusCategories() {
-    document.querySelector<HTMLButtonElement>(".museum-category-tile")?.focus();
+    setCategoriesOpen(true);
+    window.setTimeout(() => document.querySelector<HTMLButtonElement>(".museum-category-tile")?.focus(), 100);
   }
 
   function openHome() {
+    if (transitionTimer.current) clearTimeout(transitionTimer.current);
+    setTransitioning(false);
+    setCategoriesOpen(false);
     setActiveView("gallery");
     setSelectedCategory("");
     setStoryOpen(false);
@@ -254,8 +263,13 @@ export default function HomePage() {
     const next = slug === "__all__" ? "" : slug;
     setSelectedCategory(next);
     setActiveView("gallery");
-    setStoryOpen(true);
-    void loadGallery(galleryParams(1, next));
+    setSearch(""); setGradeFilter(""); setClassFilter(""); setProjectFilter(""); setYearFilter("");
+    void loadGallery(galleryParams(1, next, "", "", "", "", ""));
+    if (!storyOpen) {
+      setTransitioning(true);
+      if (transitionTimer.current) clearTimeout(transitionTimer.current);
+      transitionTimer.current = setTimeout(() => { setTransitioning(false); setStoryOpen(true); }, reduceMotion ? 0 : 3000);
+    }
   }
 
   function applyGalleryFilters(event: FormEvent<HTMLFormElement>) {
@@ -276,13 +290,19 @@ export default function HomePage() {
   }
 
   return (
-    <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""} ${activeView !== "gallery" ? "museum-app-panel" : ""}`} id="top">
+    <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""} ${activeView !== "gallery" ? "museum-app-panel" : ""} ${categoriesOpen ? "categories-expanded" : ""}`} id="top">
       {introOpen && <CinematicIntro onFinish={finishIntro} />}
+      <AnimatePresence>{transitioning && <motion.div className="gallery-transition" role="status" aria-label="جارٍ فتح المعرض" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div className="gallery-transition-mark" initial={reduceMotion ? false : { scale: .65, rotate: -12 }} animate={{ scale: 1, rotate: 0 }} transition={{ duration: 1.1 }}>
+          <Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية الأهلية" width={200} height={200} />
+        </motion.div>
+        <strong>أقسام المعرض</strong>
+      </motion.div>}</AnimatePresence>
       <dialog ref={toolsDialogRef} className="museum-tools-dialog" onCancel={(event) => { event.preventDefault(); setToolsOpen(false); }} onClose={() => setToolsOpen(false)} aria-labelledby="museum-tools-title">
         <div className="museum-tools-heading"><strong id="museum-tools-title">أدوات المعرض</strong><button onClick={() => setToolsOpen(false)} aria-label="إغلاق"><X size={20} /></button></div>
         <nav className="museum-tools-nav" aria-label="التنقل الرئيسي">
           <button className={activeView === "gallery" && !selectedCategory ? "is-active" : ""} onClick={openHome}>الرئيسية</button>
-          <button className={activeView === "gallery" && Boolean(selectedCategory) ? "is-active" : ""} onClick={() => { setActiveView("gallery"); setStoryOpen(false); setToolsOpen(false); requestAnimationFrame(focusCategories); }}>الأقسام</button>
+          <button className={activeView === "gallery" && Boolean(selectedCategory) ? "is-active" : ""} onClick={() => { setActiveView("gallery"); setStoryOpen(false); setToolsOpen(false); focusCategories(); }}>الأقسام</button>
           <button className={activeView === "projects" ? "is-active" : ""} onClick={() => { setActiveView("projects"); setToolsOpen(false); }}>المشاريع</button>
           <button className={activeView === "about" ? "is-active" : ""} onClick={() => { setActiveView("about"); setToolsOpen(false); }}>عن المنصة</button>
         </nav>
@@ -320,7 +340,7 @@ export default function HomePage() {
         <button className="museum-open-tools" onClick={() => setToolsOpen(true)}><Grid2X2 size={16} /> أدوات المعرض</button>
 
         {storyOpen && activeView === "gallery" && <GalleryStory
-          key={`${selectedCategory}-${pagination.page}`}
+          key={selectedCategory}
           artworks={artworks}
           category={categoryCards.find((category) => category.slug === selectedCategory)?.name ?? "كل المشاريع"}
           loading={loading}
@@ -330,7 +350,7 @@ export default function HomePage() {
           paused={Boolean(selected) || toolsOpen || filtersOpen || profileOpen}
           onPage={(page) => void loadGallery(galleryParams(page))}
           onSelect={setSelected}
-          onClose={() => setStoryOpen(false)}
+          onClose={openHome}
         />}
         <AnimatePresence mode="wait" initial={false}>
           {!(storyOpen && activeView === "gallery") && <motion.div key={`${activeView}-${selectedCategory}`} className="museum-center" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: -8 }} transition={{ duration: 0.32 }}>
@@ -383,36 +403,45 @@ export default function HomePage() {
           </motion.button>)}
           <span className="museum-gallery-hint"><Sparkles size={12} /> اختر لوحة لاكتشاف حكايتها</span>
         </aside>}
-        {apiError && !(storyOpen && activeView === "gallery") && <p className="museum-api-notice" role="status">{apiError}</p>}
+        {apiError && !(storyOpen && activeView === "gallery") && <p className="museum-api-notice" role="status">تعذر الاتصال بالمعرض</p>}
       </section>
 
       <section className="museum-category-dock" aria-label="أقسام المعرض">
-        <div className="museum-dock-heading">
-          <span>عالم الألوان</span>
-          <strong>ابدأ استكشاف أعمالنا</strong>
-          <small>{categoryCards.length} أقسام فنية</small>
-        </div>
-        <div className="museum-category-track">
+        {storyOpen && activeView === "gallery" ? <div className="gallery-screen-header">
+          <button onClick={openHome}>عودة</button>
+          <div className="gallery-screen-logos"><Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية" width={50} height={50} /><Image src="/assets/logos/al-motaqadimah-official.png" alt="شعار شركة المدارس المتقدمة" width={65} height={40} /></div>
+          <button onClick={() => setToolsOpen(true)}>معرضنا</button>
+        </div> : <button className="discovery-trigger" aria-expanded={categoriesOpen} aria-controls="category-accordion" onClick={() => setCategoriesOpen((open) => !open)}>
+          <Image src="/assets/decorations/palette.svg" width={68} height={68} alt="" />
+          <span><strong>🎨 عالم الألوان والإبداع</strong><small>اكتشفوا أعمالنا الفنية!</small><b>استكشف أقسام المعرض</b><small>10 أقسام إبداعية بانتظاركم</small></span>
+          <motion.span animate={{ rotate: categoriesOpen ? 180 : 0 }}><ChevronDown size={22} /></motion.span>
+        </button>}
+        {storyOpen && activeView === "gallery" && <div className="gallery-category-heading"><strong>أقسام المعرض</strong><small>10 أقسام إبداعية بانتظاركم</small></div>}
+        <AnimatePresence initial={false}>
+        {(categoriesOpen || (storyOpen && activeView === "gallery")) && <motion.div id="category-accordion" className="museum-category-track"
+          initial={reduceMotion ? false : { height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduceMotion ? 0 : .35 }}>
           <div className="museum-category-list" id="category-dock" tabIndex={-1}>
-            {visibleCategories.map((category) => {
+            {visibleCategories.map((category, index) => {
               const active = selectedCategory === category.slug || (category.slug === "__all__" && !selectedCategory);
-              return <motion.button key={category.slug} className={`museum-category-tile category-${category.tint} ${active ? "is-selected" : ""}`} onClick={() => chooseCategory(category.slug)} aria-pressed={active} aria-label={`عرض ${category.name}`} whileHover={reduceMotion ? undefined : { y: -6, scale: 1.025 }} whileTap={reduceMotion ? undefined : { scale: 0.96 }} transition={{ type: "spring", stiffness: 330, damping: 22 }}>
+              return <motion.button key={category.slug} className={`museum-category-tile category-${category.tint} ${active ? "is-selected" : ""}`} onClick={() => chooseCategory(category.slug)} aria-pressed={active} aria-label={`عرض ${category.name}`} initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} whileHover={reduceMotion ? undefined : { scale: 1.025 }} whileTap={reduceMotion ? undefined : { scale: 0.96 }} transition={{ delay: reduceMotion ? 0 : index * .025 }}>
                 <span className="museum-tile-art" aria-hidden="true">
-                  <Image src={`/assets/category-scenes/${category.asset}`} alt="" fill sizes="(max-width: 900px) 50vw, 12vw" />
+                  <Image src={category.coverUrl || `/assets/category-scenes/${category.asset}`} alt="" fill sizes="(max-width: 900px) 50vw, 12vw" />
                 </span>
                 <strong>{category.name}</strong>
                 <span className="museum-tile-arrow" aria-hidden="true"><ChevronLeft size={15} /></span>
               </motion.button>;
             })}
           </div>
-        </div>
         {categoryPages > 1 && <nav className="museum-category-pages" aria-label="صفحات الأقسام">
           <button type="button" disabled={categoryPage === 0} onClick={() => setCategoryPage((page) => page - 1)}>السابق</button>
           <span>{categoryPage + 1} / {categoryPages}</span>
           <button type="button" disabled={categoryPage >= categoryPages - 1} onClick={() => setCategoryPage((page) => page + 1)}>التالي</button>
         </nav>}
+        </motion.div>}
+        </AnimatePresence>
       </section>
 
+      <VisitorFeedback />
       <footer className="museum-footer">
         <svg className="museum-footer-skyline" viewBox="0 0 270 42" fill="none" aria-hidden="true">
           <path d="M0 40h270M4 40V26h10v14M19 40V15h5v-6h5v6h6v25M40 40V25h13v-9h9v24M69 40V20h6v-8h4v8h7v20M91 40V27h13v-8h8v21M117 40V16h8v-9h5v9h8v24M143 40V26h12V13h5v-7h4v7h7v13h9v14M187 40V22h8v-9h5v9h9v18M214 40V27h12v-8h5v-6h5v6h9v21M252 40V25h14" stroke="url(#museum-gold)" strokeWidth="1.4" />
