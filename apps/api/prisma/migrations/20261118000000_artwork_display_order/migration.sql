@@ -1,0 +1,2 @@
+ALTER TABLE "Artwork" ALTER COLUMN "studentId" DROP NOT NULL;
+ALTER TABLE "Artwork" ADD COLUMN "sortOrder" INTEGER;

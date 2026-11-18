@@ -4,10 +4,10 @@ An Arabic, right-to-left digital art museum for مدارس الابتكارية 
 
 ## What is included
 
-- Immersive, responsive Arabic homepage with school/company marks and teacher portrait supplied for the project.
+- Single-screen, responsive Arabic homepage with school/company marks and teacher portrait supplied for the project. Additional categories are accessible through the category page controls.
 - Installable progressive web app, with an offline connection notice; live gallery content still requires an internet connection.
 - Searchable, published-only public gallery with animated category stories, 3-second multi-image slides and 4-second single-image works, server-backed pagination, artwork details, student privacy labels, and a lightweight Three.js gallery-room scene. Auto-advance pauses for dialogs, hidden tabs, and reduced-motion preferences.
-- Separate `/admin` content-management area with administrator login, summary metrics, and CRUD for artwork, students, grades, classes, categories, projects, and gallery events, plus website settings.
+- Separate `/admin` area for signing in and adding, editing, or deleting a category's artwork with text, a photo, and a display order.
 - NestJS API with request validation, Swagger docs, Helmet, CORS allow-list, rate limiting, Argon2 admin password hashes, short-lived JWT in an HttpOnly cookie, role checks, and Cloudinary uploads.
 - PostgreSQL schema, Prisma seed, Neon pooled runtime URL and direct migration URL support, and conventional Node deployment configuration.
 
@@ -53,6 +53,8 @@ The installed app is named **MR Ghailene** and uses the teacher's photograph for
 ## Database and migrations
 
 The Prisma schema is `apps/api/prisma/schema.prisma`. Runtime queries use `DATABASE_URL`; Prisma migrations use `DIRECT_URL`. The initial migration enables PostgreSQL `pg_trgm` indexes for substring search. Run `npm run db:migrate` to apply reviewed migrations and `npm run db:seed` to create the initial admin, settings row, and categories. Seeding does not change an existing administrator's password or reactivate a disabled account.
+
+Apply the artwork display-order migration before deploying the updated API. Lower order numbers appear first; works without an assigned order follow them using the previous featured/date ordering. Existing student attribution and other artwork details are preserved when editing. New works added through the simplified admin are published immediately and do not require a student record.
 
 For schema changes during development, use Prisma Migrate to create and review migration SQL, then commit the resulting migration directory. Never run `db push` against production.
 

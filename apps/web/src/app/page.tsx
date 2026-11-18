@@ -19,15 +19,15 @@ import { GalleryStory } from "@/components/gallery-story";
 const GalleryRoom = dynamic(() => import("@/components/gallery-room"), { ssr: false });
 
 const categoryVisuals = [
-  { slug: "onsite", name: "مبدعون صغار", asset: "onsite.webp", tint: "coral", note: "ألوان من مدرستنا" },
-  { slug: "remote", name: "إبداعات رقمية", asset: "remote.webp", tint: "turquoise", note: "مساحات من الخيال" },
-  { slug: "projects", name: "مواهب مبدعة", asset: "projects.webp", tint: "blue", note: "أفكار كبرت معنا" },
-  { slug: "founding-day", name: "صور تراثية", asset: "founding-day.webp", tint: "founding", note: "حكاية وطن" },
+  { slug: "onsite", name: "إبداعات حضورية", asset: "onsite.webp", tint: "coral", note: "ألوان من مدرستنا" },
+  { slug: "remote", name: "إبداعات عن بُعد", asset: "remote.webp", tint: "turquoise", note: "مساحات من الخيال" },
+  { slug: "projects", name: "مشاريع فنية", asset: "projects.webp", tint: "blue", note: "أفكار كبرت معنا" },
+  { slug: "founding-day", name: "يوم التأسيس", asset: "founding-day.webp", tint: "founding", note: "حكاية وطن" },
   { slug: "national-day", name: "يوم الوطن", asset: "national-day-saudi.webp", tint: "emerald", note: "رايتنا خضراء" },
-  { slug: "models", name: "عالم الألوان", asset: "models.webp", tint: "violet", note: "ألوان وخامات بصرية" },
+  { slug: "models", name: "عالم المجسمات", asset: "models.webp", tint: "violet", note: "ألوان وخامات بصرية" },
   { slug: "moments", name: "لحظات فنية", asset: "moments.webp", tint: "sky", note: "من يوميات المرسم" },
-  { slug: "featured", name: "نجوم المستقبل", asset: "featured.webp", tint: "amber", note: "إبداع يستحق الضوء" },
-  { slug: "exhibitions", name: "معرض المدرسة", asset: "exhibitions.webp", tint: "fuchsia", note: "لقاءاتنا ومعارضنا" },
+  { slug: "featured", name: "نجوم بصمة فن", asset: "featured.webp", tint: "amber", note: "إبداع يستحق الضوء" },
+  { slug: "exhibitions", name: "معارضنا الفنية", asset: "exhibitions.webp", tint: "fuchsia", note: "لقاءاتنا ومعارضنا" },
   { slug: "__all__", name: "أركان المعرض", asset: "all-projects.webp", tint: "royal", note: "كل حكاياتنا الفنية" },
 ];
 type CategoryCard = PublicCategory & { asset: string; tint: string; note: string };
@@ -37,7 +37,7 @@ const defaultSettings: PublicSettings = {
   subtitle: "الابتكارية ٢",
   slogan: "كل طالب فنان.. وكل إبداع له بصمة.",
   description: "معرض الإبداع الفني الرقمي",
-  teacherName: "غيلان الخزامي",
+  teacherName: "الأستاذ غيلان الخزامي",
   teacherTitle: "أستاذ التربية الفنية",
   teacherPhotoUrl: "/assets/team/art-teacher.png",
   academicSupervisor: "الأستاذ رفيق عباس",
@@ -50,6 +50,7 @@ export default function HomePage() {
   const reduceMotion = useReducedMotion();
   const [settings, setSettings] = useState(defaultSettings);
   const [categories, setCategories] = useState<PublicCategory[]>([]);
+  const [categoryPage, setCategoryPage] = useState(0);
   const [artworks, setArtworks] = useState<PublicArtwork[]>([]);
   const [filterOptions, setFilterOptions] = useState<PublicFilterOptions>({ grades: [], classes: [], projects: [] });
   const [events, setEvents] = useState<PublicGalleryEvent[]>([]);
@@ -176,6 +177,12 @@ export default function HomePage() {
     ].filter((item): item is CategoryCard => Boolean(item));
     return ordered.filter((item, index, list) => list.findIndex((candidate) => candidate.slug === item.slug) === index);
   }, [categories]);
+  const categoryPages = Math.ceil(categoryCards.length / 10);
+  const visibleCategories = categoryCards.slice(categoryPage * 10, (categoryPage + 1) * 10);
+
+  useEffect(() => {
+    setCategoryPage((page) => Math.min(page, Math.max(0, categoryPages - 1)));
+  }, [categoryPages]);
 
   function galleryParams(
     page = 1,
@@ -206,7 +213,7 @@ export default function HomePage() {
   }
 
   function focusCategories() {
-    document.querySelector<HTMLButtonElement>(".museum-category-tile")?.focus({ preventScroll: true });
+    document.querySelector<HTMLButtonElement>(".museum-category-tile")?.focus();
   }
 
   function openHome() {
@@ -249,12 +256,12 @@ export default function HomePage() {
   }
 
   return (
-    <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""}`} id="top">
+    <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""} ${activeView !== "gallery" ? "museum-app-panel" : ""}`} id="top">
       <dialog ref={toolsDialogRef} className="museum-tools-dialog" onCancel={(event) => { event.preventDefault(); setToolsOpen(false); }} onClose={() => setToolsOpen(false)} aria-labelledby="museum-tools-title">
         <div className="museum-tools-heading"><strong id="museum-tools-title">أدوات المعرض</strong><button onClick={() => setToolsOpen(false)} aria-label="إغلاق"><X size={20} /></button></div>
         <nav className="museum-tools-nav" aria-label="التنقل الرئيسي">
           <button className={activeView === "gallery" && !selectedCategory ? "is-active" : ""} onClick={openHome}>الرئيسية</button>
-          <button className={activeView === "gallery" && Boolean(selectedCategory) ? "is-active" : ""} onClick={() => { setActiveView("gallery"); setToolsOpen(false); focusCategories(); }}>الأقسام</button>
+          <button className={activeView === "gallery" && Boolean(selectedCategory) ? "is-active" : ""} onClick={() => { setActiveView("gallery"); setStoryOpen(false); setToolsOpen(false); requestAnimationFrame(focusCategories); }}>الأقسام</button>
           <button className={activeView === "projects" ? "is-active" : ""} onClick={() => { setActiveView("projects"); setToolsOpen(false); }}>المشاريع</button>
           <button className={activeView === "about" ? "is-active" : ""} onClick={() => { setActiveView("about"); setToolsOpen(false); }}>عن المنصة</button>
         </nav>
@@ -264,6 +271,7 @@ export default function HomePage() {
             <button type="submit" aria-label="تنفيذ البحث"><Search size={18} /></button>
           </form>
           <button onClick={() => { setActiveView("gallery"); setFiltersOpen(true); setToolsOpen(false); }}><Filter size={16} /> تصفية الأعمال</button>
+          <button onClick={() => { setToolsOpen(false); if (artworks[0]) setSelected(artworks[0]); }} disabled={!artworks.length}><CirclePlay size={16} /> مشاهدة الإبداعات</button>
           <a href="/admin"><Grid2X2 size={16} /> لوحة التحكم</a>
           <InstallAppButton />
         </div>
@@ -364,7 +372,7 @@ export default function HomePage() {
         </div>
         <div className="museum-category-track">
           <div className="museum-category-list" id="category-dock" tabIndex={-1}>
-            {categoryCards.map((category) => {
+            {visibleCategories.map((category) => {
               const active = selectedCategory === category.slug || (category.slug === "__all__" && !selectedCategory);
               return <motion.button key={category.slug} className={`museum-category-tile category-${category.tint} ${active ? "is-selected" : ""}`} onClick={() => chooseCategory(category.slug)} aria-pressed={active} aria-label={`عرض ${category.name}`} whileHover={reduceMotion ? undefined : { y: -6, scale: 1.025 }} whileTap={reduceMotion ? undefined : { scale: 0.96 }} transition={{ type: "spring", stiffness: 330, damping: 22 }}>
                 <span className="museum-tile-art" aria-hidden="true">
@@ -376,6 +384,11 @@ export default function HomePage() {
             })}
           </div>
         </div>
+        {categoryPages > 1 && <nav className="museum-category-pages" aria-label="صفحات الأقسام">
+          <button type="button" disabled={categoryPage === 0} onClick={() => setCategoryPage((page) => page - 1)}>السابق</button>
+          <span>{categoryPage + 1} / {categoryPages}</span>
+          <button type="button" disabled={categoryPage >= categoryPages - 1} onClick={() => setCategoryPage((page) => page + 1)}>التالي</button>
+        </nav>}
       </section>
 
       <footer className="museum-footer">
@@ -475,7 +488,7 @@ function ArtworkDialog({
           {image ? <AnimatePresence mode="wait" initial={false}><motion.button key={`${artwork.id}-${imageIndex}`} className="dialog-image-zoom" onClick={() => setZoomed((value) => !value)} aria-label={zoomed ? "تصغير الصورة" : "تكبير الصورة"} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: .3 }}><Image src={image.url} alt={image.alt || artwork.title} fill sizes="(max-width: 900px) 90vw, 50vw" /></motion.button></AnimatePresence> : artwork.videoUrl ? <video src={artwork.videoUrl} controls playsInline aria-label={`فيديو العمل الفني: ${artwork.title}`} /> : <div className="artwork-placeholder"><Palette size={52} /></div>}
           {artwork.images.length > 1 && <div className="dialog-thumbnails">{artwork.images.map((item, index) => <button key={item.url} className={index === imageIndex ? "active" : ""} onClick={() => setImageIndex(index)} aria-label={`عرض الصورة ${index + 1}`}><Image src={item.url} alt="" fill sizes="55px" /></button>)}</div>}
         </div>
-        <div className="dialog-copy"><span className="section-kicker">{artwork.category.name}</span><h2 id="dialog-title">{artwork.title}</h2><p>{artwork.description || "عمل فني من إبداع طلابنا."}</p><dl><div><dt>الفنان</dt><dd>{artwork.studentDisplayName}</dd></div>{artwork.gradeName && <div><dt>الصف</dt><dd>{artwork.gradeName}</dd></div>}{artwork.projectName && <div><dt>المشروع</dt><dd>{artwork.projectName}</dd></div>}{artwork.materials.length > 0 && <div><dt>الخامات</dt><dd>{artwork.materials.join("، ")}</dd></div>}</dl></div>
+        <div className="dialog-copy"><span className="section-kicker">{artwork.category.name}</span><h2 id="dialog-title">{artwork.title}</h2><p>{artwork.description || "عمل فني من إبداع طلابنا."}</p><dl>{artwork.studentDisplayName && <div><dt>الفنان</dt><dd>{artwork.studentDisplayName}</dd></div>}{artwork.gradeName && <div><dt>الصف</dt><dd>{artwork.gradeName}</dd></div>}{artwork.projectName && <div><dt>المشروع</dt><dd>{artwork.projectName}</dd></div>}{artwork.materials.length > 0 && <div><dt>الخامات</dt><dd>{artwork.materials.join("، ")}</dd></div>}</dl></div>
         {image && artwork.videoUrl && <video className="dialog-video" src={artwork.videoUrl} controls playsInline aria-label={`فيديو العمل الفني: ${artwork.title}`} />}
         <nav className="artwork-dialog-nav" aria-label="التنقل بين الأعمال"><button disabled={loading} onClick={onPrevious}><ChevronRight size={17} /> العمل السابق</button>{loading ? <span role="status">جارٍ تحميل الأعمال...</span> : error ? <span role="alert">تعذر تحميل الأعمال. حاول مجددًا.</span> : null}<button disabled={loading} onClick={onNext}>العمل التالي <ChevronLeft size={17} /></button></nav>
         {related.length > 0 && <aside className="related-artworks"><h3>أعمال أخرى في هذا القسم</h3>{related.map((item) => <button key={item.id} onClick={() => onSelectRelated(item)}>{item.title}<ArrowUpLeft size={14} /></button>)}</aside>}

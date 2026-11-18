@@ -85,7 +85,7 @@ export class PublicContentController {
     };
     const [rows, total, categories, settings, grades, classes, projects, events] = await this.prisma.$transaction([
       this.prisma.artwork.findMany({
-        where, include: publicArtworkInclude, orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+        where, include: publicArtworkInclude, orderBy: [{ sortOrder: { sort: "asc", nulls: "last" } }, { featured: "desc" }, { createdAt: "desc" }, { id: "asc" }],
         skip: (page - 1) * pageSize, take: pageSize,
       }),
       this.prisma.artwork.count({ where }),
@@ -122,8 +122,8 @@ export class PublicContentController {
         title: artwork.title,
         slug: artwork.slug,
         description: artwork.description,
-        studentDisplayName: artwork.student.anonymous ? "فنان من الابتكارية" : artwork.student.fullName,
-        gradeName: artwork.student.grade.name,
+        studentDisplayName: artwork.student ? (artwork.student.anonymous ? "فنان من الابتكارية" : artwork.student.fullName) : "",
+        gradeName: artwork.student?.grade.name ?? null,
         category: {
           id: artwork.category.id, name: artwork.category.name, slug: artwork.category.slug,
           description: artwork.category.description, coverUrl: artwork.category.coverUrl,
@@ -182,7 +182,7 @@ export class ContentController {
 
   @Get("artworks")
   listArtworks() {
-    return this.prisma.artwork.findMany({ include: publicArtworkInclude, orderBy: { createdAt: "desc" } });
+    return this.prisma.artwork.findMany({ include: publicArtworkInclude, orderBy: [{ sortOrder: { sort: "asc", nulls: "last" } }, { createdAt: "desc" }] });
   }
 
   @Post("artworks")
@@ -219,7 +219,9 @@ export class ContentController {
       },
       include: publicArtworkInclude,
     });
-    for (const image of oldImages) await this.cloudinary.delete(image.publicId);
+    for (const image of oldImages) {
+      if (!images?.some((replacement) => replacement.publicId === image.publicId)) await this.cloudinary.delete(image.publicId);
+    }
     if (oldVideoId && oldVideoId !== body.videoPublicId) await this.cloudinary.delete(oldVideoId, "video");
     return updated;
   }

@@ -28,8 +28,9 @@ export class CreateArtworkDto {
   @IsString() @MinLength(1) title!: string;
   @IsOptional() @IsString() slug?: string;
   @IsOptional() @IsString() description?: string;
-  @IsString() @MinLength(1) studentId!: string;
+  @IsOptional() @IsString() @MinLength(1) studentId?: string;
   @IsString() @MinLength(1) categoryId!: string;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(0) sortOrder?: number;
   @IsOptional() @IsString() projectId?: string;
   @IsOptional() @IsArray() @IsString({ each: true }) materials?: string[];
   @IsOptional() @IsDateString() createdOn?: string;
@@ -47,6 +48,7 @@ export class UpdateArtworkDto {
   @IsOptional() @IsString() description?: string;
   @IsOptional() @IsString() studentId?: string;
   @IsOptional() @IsString() categoryId?: string;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(0) sortOrder?: number;
   @IsOptional() @IsString() projectId?: string | null;
   @IsOptional() @IsArray() @IsString({ each: true }) materials?: string[];
   @IsOptional() @IsDateString() createdOn?: string | null;
