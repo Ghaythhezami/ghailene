@@ -138,7 +138,6 @@ export function VisitorFeedback() {
       <div className="visitor-count">
         <h2><UsersRound aria-hidden="true" size={23} /> زوار معرضنا</h2>
         <strong dir="ltr">{count === null ? "—" : count.toLocaleString("en-US")}</strong>
-        <p>يسعدنا وجودكم معنا!</p>
         {countError && <p className="visitor-load-error" role="status">تعذر تحميل عدد الزوار.</p>}
       </div>
     </section>
@@ -152,7 +151,7 @@ export function VisitorFeedback() {
         <div className="visitor-recent" onPointerEnter={(event) => { if (event.pointerType === "mouse") setFeedbackHovered(true); }} onPointerLeave={(event) => { if (event.pointerType === "mouse") setFeedbackHovered(false); }} onFocusCapture={() => setFeedbackFocused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFeedbackFocused(false); }}>
           <h3>آخر آراء الزوار</h3>
           {feedbackError && <p role="status">تعذر تحميل آراء الزوار. <button onClick={() => void loadFeedback(pagination.page)}>إعادة المحاولة</button></p>}
-          {!feedbackError && feedback.length === 0 && <p>{loadingFeedback ? "جارٍ تحميل الآراء..." : "بانتظار مشاركاتكم الجميلة."}</p>}
+          {!feedbackError && feedback.length === 0 && loadingFeedback && <p role="status">جارٍ تحميل الآراء...</p>}
           <AnimatePresence mode="wait" initial={false}>
             {feedback[index] && <motion.button ref={focusFeedbackEntry} type="button" className="feedback-entry" onClick={() => setDetailOpen(true)} onKeyDown={(event) => { if (pagination.total > 1 && (event.key === "ArrowLeft" || event.key === "ArrowRight")) { event.preventDefault(); restoreFeedbackFocus.current = true; moveFeedback(event.key === "ArrowLeft" ? 1 : -1); } }} aria-label={`قراءة رأي ${feedback[index].name}`} aria-describedby="feedback-keyboard-help" key={feedback[index].id} initial={reduceMotion ? false : { opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} exit={reduceMotion ? undefined : { opacity: 0, x: -18 }} transition={{ duration: .22 }}><Image className="feedback-avatar" src="/assets/decorations/visitor-avatar.webp" alt="" width={160} height={191} /><span className="feedback-entry-copy"><strong>{feedback[index].name}</strong><span>{feedback[index].message}</span></span></motion.button>}
           </AnimatePresence>

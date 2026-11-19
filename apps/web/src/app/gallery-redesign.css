@@ -1,5 +1,5 @@
 .museum-app.museum-app-story {
-  grid-template-rows: minmax(0, 46fr) minmax(0, 54fr) !important;
+  grid-template-rows: minmax(0, 33fr) minmax(0, 67fr) !important;
   justify-items: center;
   background: #cef4f8 url("/assets/decorations/gallery-sky.webp") center / auto 100% no-repeat;
 }
@@ -15,7 +15,7 @@
 .museum-app-story .museum-category-dock::after {
   position: absolute;
   z-index: 0;
-  top: 13%;
+  top: 0;
   left: 0;
   width: clamp(45px, 17vw, 100px);
   height: 22%;
@@ -28,7 +28,8 @@
 .museum-app-story .gallery-screen-header {
   position: relative;
   z-index: 1;
-  height: 24%;
+  height: clamp(36px, 5vh, 50px);
+  flex: 0 0 auto;
   min-height: 0;
   direction: ltr;
 }
@@ -48,28 +49,24 @@
   border-radius: 50%;
 }
 .museum-app-story .gallery-header-menu {
-  gap: 5px;
+  width: clamp(36px, 5vh, 50px);
   height: clamp(36px, 5vh, 50px);
-  padding: 0 10px;
-  border-radius: 30px;
-  font-size: clamp(11px, 1.7vh, 15px);
+  padding: 0;
+  border-radius: 50%;
 }
-.museum-app-story .gallery-screen-logos { flex: 1; justify-content: center; gap: 8px; }
-.museum-app-story .gallery-screen-logos img { max-width: 42%; height: 95%; }
-.museum-app-story .gallery-screen-logos span { width: 1px; height: 70%; background: #087c91; }
-
 .museum-app-story .gallery-category-heading {
   position: relative;
   z-index: 1;
-  height: 17%;
+  height: 100%;
   min-height: 0;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
   padding: 0 0 2px;
 }
 .museum-app-story .gallery-category-heading strong {
   display: grid;
-  width: min(53%, 310px);
+  width: min(90%, 250px);
   min-height: 0;
   flex: 1;
   place-items: center;
@@ -78,13 +75,13 @@
   border-radius: 42% 42% 38% 38% / 50%;
   background: linear-gradient(175deg, #26c9d2, #009aa8 55%, #006e7d);
   box-shadow: inset 0 3px 3px #e6ffffa0, 0 3px 0 #087d89, 0 5px 8px #007b8e4d;
-  font-size: clamp(17px, 3.2vh, 30px);
+  font-size: clamp(13px, 2.2vh, 22px);
   line-height: 1;
   text-shadow: 0 2px 2px #007080;
 }
 .museum-app-story .gallery-category-heading small {
   color: #075969;
-  font-size: clamp(10px, 1.7vh, 15px);
+  font-size: clamp(8px, 1.2vh, 11px);
   font-weight: 900;
 }
 .museum-app-story .museum-category-track {
@@ -156,6 +153,7 @@
 }
 .museum-app-story .museum-category-tile.is-selected,
 .museum-app-story .museum-category-tile.is-selected:nth-child(n) {
+  z-index: 2;
   border: 2px solid #73be2e;
   box-shadow: 0 0 0 2px #c7f272, inset 0 0 8px #a6e75b, 0 3px 7px #38994966;
 }
@@ -174,12 +172,13 @@
   height: 100%;
   padding: 5px;
   overflow: visible;
-  border: 2px solid #e6ffff;
-  border-radius: 25px 28px 24px 28px;
-  background: linear-gradient(160deg, #49d9e47a, #eaffff89 60%, #9de5d89c), url("/assets/decorations/cinematic-school.webp") center bottom / cover;
-  box-shadow: inset 0 2px 8px #fff9, 0 5px 12px #00849466;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .museum-app-story .story-body { position: relative; gap: 3px; }
+.gallery-image-preload { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
 .museum-app-story .story-frame.story-carousel {
   overflow: visible;
   border: 0;
@@ -196,16 +195,30 @@
   box-shadow: 0 2px 0 #fff7cf, 0 5px 10px #38656a88, inset 0 0 0 2px #997948;
 }
 .museum-app-story .story-main-image img { object-fit: contain; }
-.museum-app-story .story-arrow {
-  width: clamp(36px, 5.2vh, 48px);
-  height: clamp(36px, 5.2vh, 48px);
-  border: 2px solid #e8ffff;
-  background: linear-gradient(#fff, #e6ffff);
-  color: #008b9d;
-  box-shadow: 0 3px 8px #147e8c66;
+.museum-app-story .story-neighbor {
+  z-index: 1;
+  top: 11%;
+  display: grid;
+  width: 65%;
+  height: 72%;
+  place-items: center;
+  overflow: hidden;
+  border: clamp(5px, 1vh, 8px) ridge #e4c47f;
+  border-radius: 5px;
+  background: #fffdf6;
+  color: #108d9c;
+  box-shadow: 0 8px 14px #27575a77;
+  opacity: .8;
 }
-.museum-app-story .story-prev { right: 0; }
-.museum-app-story .story-next { left: 0; }
+.museum-app-story .story-neighbor img { object-fit: contain; }
+.museum-app-story .story-neighbor-prev {
+  right: 0;
+  transform: rotate(7deg);
+}
+.museum-app-story .story-neighbor-next {
+  left: 0;
+  transform: rotate(-7deg);
+}
 .museum-app-story .story-copy {
   position: absolute;
   z-index: 5;
@@ -243,15 +256,6 @@
   object-fit: cover;
   object-position: center top;
 }
-.museum-app-story .story-actions { position: absolute; z-index: 6; top: 5px; right: 5px; gap: 3px; }
-.museum-app-story .story-actions button {
-  width: 34px;
-  min-height: 34px;
-  padding: 0;
-  border: 1px solid #fff;
-  background: #f2ffffe8;
-  color: #007f90;
-}
 .museum-app-story .story-carousel-status { justify-content: center; min-height: 20px; }
 .museum-app-story .story-carousel-status strong { font-size: 10px; }
 .museum-app-story .story-progress-bars { justify-content: center; }
@@ -262,11 +266,8 @@
 
 @media (max-height: 650px) {
   .museum-app-story .museum-category-dock { padding-top: 2px; }
-  .museum-app-story .gallery-screen-header { height: 22%; }
-  .museum-app-story .gallery-category-heading { height: 18%; }
   .museum-app-story .museum-category-track { padding: 3px; }
   .museum-app-story .museum-category-list { gap: 2px 4px; }
   .museum-app-story .museum-category-tile > strong,
   .museum-app-story .museum-category-tile:nth-child(n) > strong { font-size: 9px; }
-  .museum-app-story .story-actions button { width: 30px; min-height: 30px; }
 }

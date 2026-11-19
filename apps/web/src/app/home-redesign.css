@@ -53,6 +53,7 @@
   font-weight: 900;
   box-shadow: 0 4px 0 #08778a, 0 7px 12px #00879d44, inset 0 1px #ffffff90;
 }
+.museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-open-tools { width: 40px; justify-content: center; padding: 0; border-radius: 50%; }
 .school-hero { position: relative; z-index: 1; width: 100%; }
 .school-hero::after {
   position: absolute;
@@ -498,7 +499,7 @@
   gap: clamp(2px, .4vh, 5px);
 }
 .school-hero-logos { height: 24%; flex-basis: 24%; }
-.school-hero-title { flex-direction: row-reverse; }
+.school-hero-title { flex-direction: row; }
 .school-hero-title b { font-size: clamp(30px, 4.5vh, 52px); }
 .school-leadership > div { font-size: clamp(8px, 1.15vh, 12px); line-height: 1.15; }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-category-dock {

@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpLeft, BookOpen, ChevronLeft, ChevronRight,
   CirclePlay, Eye, Filter, Grid2X2, Image as ImageIcon, Menu,
-  Palette, Search, Sparkles, Star, UserRound, X,
+  Palette, Pause, Play, Search, Sparkles, Star, UserRound, X,
 } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
@@ -34,6 +34,8 @@ const categoryVisuals = [
   { slug: "__all__", name: "أركان المعرض", asset: "all-projects.webp", tint: "royal", note: "كل حكاياتنا الفنية" },
 ];
 type CategoryCard = PublicCategory & { asset: string; tint: string; note: string };
+type GalleryContent = Awaited<ReturnType<typeof fetchPublicContent>>;
+type StoryPosition = { category: string; page: number; artwork: PublicArtwork };
 
 const defaultSettings: PublicSettings = {
   platformName: "بصمة فن",
@@ -61,6 +63,7 @@ export default function HomePage() {
   const [selected, setSelected] = useState<PublicArtwork | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [storyOpen, setStoryOpen] = useState(false);
+  const [slideshowPaused, setSlideshowPaused] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [search, setSearch] = useState("");
@@ -78,7 +81,12 @@ export default function HomePage() {
   const profileDialogRef = useRef<HTMLDialogElement>(null);
   const [pagination, setPagination] = useState({ page: 1, pageSize: 12, total: 0, pages: 0 });
   const galleryRequest = useRef(0);
+  const [loadedQuery, setLoadedQuery] = useState("");
+  const [prefetchedArtwork, setPrefetchedArtwork] = useState<PublicArtwork | null>(null);
+  const prefetchedPage = useRef<{ key: string; startedAt: number; promise: Promise<GalleryContent> } | null>(null);
   const emptyStoryCategories = useRef(new Set<string>());
+  const storyHistory = useRef<StoryPosition[]>([]);
+  const [storyBackTarget, setStoryBackTarget] = useState<StoryPosition | null>(null);
   const selectedRef = useRef<PublicArtwork | null>(null);
   selectedRef.current = selected;
 
@@ -100,13 +108,29 @@ export default function HomePage() {
     setIntroOpen(false);
   }, []);
 
-  const loadGallery = useCallback(async (query: URLSearchParams = new URLSearchParams(), selectPage?: { side: "first" | "last"; currentId: string }) => {
+  const loadGallery = useCallback(async (query: URLSearchParams = new URLSearchParams(), selectPage?: { side: "first" | "last"; currentId: string }, usePrefetch = false) => {
     const requestId = ++galleryRequest.current;
+    const key = query.toString();
+    const cached = usePrefetch && prefetchedPage.current?.key === key && Date.now() - prefetchedPage.current.startedAt < 60000
+      ? prefetchedPage.current : null;
+    prefetchedPage.current = null;
+    setPrefetchedArtwork(null);
     setLoading(true);
     setApiError("");
     try {
-      const content = await fetchPublicContent(query);
+      let content: GalleryContent;
+      if (cached) {
+        try {
+          content = await cached.promise;
+        } catch (error) {
+          console.warn("Unable to use prefetched gallery page; retrying:", error);
+          content = await fetchPublicContent(query);
+        }
+      } else {
+        content = await fetchPublicContent(query);
+      }
       if (requestId !== galleryRequest.current) return;
+      setLoadedQuery(key);
       setSettings(content.settings ?? defaultSettings);
       setCategories(content.categories);
       setArtworks(content.artworks);
@@ -136,7 +160,7 @@ export default function HomePage() {
       setSelected(artworks[next]);
     } else if (pagination.pages > 1) {
       const page = offset > 0 ? (pagination.page < pagination.pages ? pagination.page + 1 : 1) : (pagination.page > 1 ? pagination.page - 1 : pagination.pages);
-      void loadGallery(galleryParams(page), { side: offset > 0 ? "first" : "last", currentId: selected.id });
+      void loadGallery(storyParams(page), { side: offset > 0 ? "first" : "last", currentId: selected.id }, offset > 0);
     } else {
       setSelected(artworks[(next + artworks.length) % artworks.length]);
     }
@@ -230,8 +254,52 @@ export default function HomePage() {
     return params;
   }
 
+  function storyParams(page: number, category?: string) {
+    const params = new URLSearchParams(loadedQuery);
+    params.set("page", String(page));
+    if (category !== undefined) {
+      if (category) params.set("category", category);
+      else params.delete("category");
+    }
+    return params;
+  }
+
+  useEffect(() => {
+    if (!storyOpen || activeView !== "gallery" || loading || apiError || !artworks.length) return;
+    const params = new URLSearchParams(loadedQuery);
+    if (pagination.page < pagination.pages) {
+      params.set("page", String(pagination.page + 1));
+    } else {
+      const current = params.get("category") ?? "";
+      const next = nextStoryCategory(categoryCards.map((category) => category.slug), current, new Set(), false);
+      if (!next) return;
+      params.set("page", "1");
+      params.set("category", next);
+    }
+    const key = params.toString();
+    const entry = { key, startedAt: Date.now(), promise: fetchPublicContent(params) };
+    prefetchedPage.current = entry;
+    let active = true;
+    entry.promise.then((content) => {
+      if (active && prefetchedPage.current === entry) setPrefetchedArtwork(content.artworks[0] ?? null);
+    }, (error) => {
+      if (active && prefetchedPage.current === entry) {
+        prefetchedPage.current = null;
+        console.warn("Unable to prefetch the next gallery page:", error);
+      }
+    });
+    return () => { active = false; };
+  }, [storyOpen, activeView, loading, apiError, artworks, loadedQuery, pagination.page, pagination.pages, categoryCards]);
+
+  function resetStoryNavigation() {
+    storyHistory.current = [];
+    setStoryBackTarget(null);
+    emptyStoryCategories.current.clear();
+  }
+
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    resetStoryNavigation();
     setToolsOpen(false);
     setActiveView("gallery");
     setStoryOpen(true);
@@ -252,7 +320,8 @@ export default function HomePage() {
     setActiveView("gallery");
     setSelectedCategory("");
     setStoryOpen(false);
-    emptyStoryCategories.current.clear();
+    setSlideshowPaused(false);
+    resetStoryNavigation();
     setSearch("");
     setGradeFilter("");
     setClassFilter("");
@@ -265,7 +334,7 @@ export default function HomePage() {
 
   function chooseCategory(slug: string) {
     const next = slug === "__all__" ? "" : slug;
-    emptyStoryCategories.current.clear();
+    resetStoryNavigation();
     setSelectedCategory(next);
     setActiveView("gallery");
     setSearch(""); setGradeFilter(""); setClassFilter(""); setProjectFilter(""); setYearFilter("");
@@ -280,13 +349,30 @@ export default function HomePage() {
   function advanceStoryCategory(empty: boolean) {
     const next = nextStoryCategory(categoryCards.map((category) => category.slug), selectedCategory, emptyStoryCategories.current, empty);
     if (!next) return;
+    if (!empty && artworks.length) {
+      storyHistory.current.push({ category: selectedCategory, page: pagination.page, artwork: artworks[artworks.length - 1] });
+      if (storyHistory.current.length > 20) storyHistory.current.shift();
+    }
+    setStoryBackTarget(null);
     setSelectedCategory(next);
     setCategoryPage(Math.floor(categoryCards.findIndex((category) => category.slug === next) / 10));
-    void loadGallery(galleryParams(1, next));
+    void loadGallery(storyParams(1, next), undefined, true);
+  }
+
+  function previousStoryCategory() {
+    const target = storyHistory.current.pop();
+    if (!target) return;
+    emptyStoryCategories.current.clear();
+    setStoryBackTarget(target);
+    setSelectedCategory(target.category);
+    const index = categoryCards.findIndex((category) => category.slug === (target.category || "__all__"));
+    setCategoryPage(Math.floor(Math.max(0, index) / 10));
+    void loadGallery(storyParams(target.page, target.category));
   }
 
   function applyGalleryFilters(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    resetStoryNavigation();
     setActiveView("gallery");
     setStoryOpen(true);
     setFiltersOpen(false);
@@ -294,6 +380,7 @@ export default function HomePage() {
   }
 
   function clearGalleryFilters() {
+    resetStoryNavigation();
     setGradeFilter("");
     setClassFilter("");
     setProjectFilter("");
@@ -305,6 +392,7 @@ export default function HomePage() {
   return (
     <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""} ${activeView !== "gallery" ? "museum-app-panel" : ""}`} id="top">
       {introOpen && <CinematicIntro onFinish={finishIntro} />}
+      {transitioning && !loading && artworks[0]?.images[0] && <span className="gallery-image-preload" aria-hidden="true"><Image src={artworks[0].images[0].url} alt="" fill sizes="(max-width: 900px) 82vw, 55vw" loading="eager" fetchPriority="high" /></span>}
       <AnimatePresence>{transitioning && <motion.div className="gallery-transition" role="status" aria-label="جارٍ فتح المعرض" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
         <motion.div className="gallery-transition-mark" initial={reduceMotion ? false : { scale: .65, rotate: -12 }} animate={{ scale: 1, rotate: 0 }} transition={{ duration: 1.1 }}>
           <Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية الأهلية" width={200} height={200} />
@@ -325,6 +413,7 @@ export default function HomePage() {
             <button type="submit" aria-label="تنفيذ البحث"><Search size={18} /></button>
           </form>
           <button onClick={() => { setActiveView("gallery"); setFiltersOpen(true); setToolsOpen(false); }}><Filter size={16} /> تصفية الأعمال</button>
+          {storyOpen && activeView === "gallery" && <button type="button" onClick={() => setSlideshowPaused((value) => !value)} disabled={Boolean(reduceMotion)}>{slideshowPaused ? <Play size={16} /> : <Pause size={16} />}{slideshowPaused ? "تشغيل العرض" : "إيقاف العرض مؤقتًا"}</button>}
           <button onClick={() => { setToolsOpen(false); if (artworks[0]) setSelected(artworks[0]); }} disabled={!artworks.length}><CirclePlay size={16} /> مشاهدة الإبداعات</button>
           <button onClick={() => { toolsDialogRef.current?.close(); setToolsOpen(false); setIntroOpen(true); }}><CirclePlay size={16} /> إعادة العرض</button>
           <a href="/admin"><Grid2X2 size={16} /> لوحة التحكم</a>
@@ -350,7 +439,7 @@ export default function HomePage() {
           </motion.form>}
         </AnimatePresence>
         {!(storyOpen && activeView === "gallery") && <TeacherProfile settings={settings} onExpand={() => setProfileOpen(true)} />}
-        <button className="museum-open-tools" onClick={() => setToolsOpen(true)}><Menu size={20} /> معرضنا</button>
+        <button className="museum-open-tools" onClick={() => setToolsOpen(true)} aria-label="أدوات المعرض"><Menu size={20} /></button>
 
         {storyOpen && activeView === "gallery" && <GalleryStory
           key={selectedCategory}
@@ -359,10 +448,13 @@ export default function HomePage() {
           loading={loading}
           error={apiError}
           pagination={pagination}
-          initialArtworkId={selected?.id}
-          paused={Boolean(selected) || toolsOpen || filtersOpen || profileOpen}
-          onPage={(page) => void loadGallery(galleryParams(page))}
+          prefetchedArtwork={prefetchedArtwork}
+          previousCategoryArtwork={storyHistory.current[storyHistory.current.length - 1]?.artwork ?? null}
+          initialArtworkId={storyBackTarget?.category === selectedCategory ? storyBackTarget.artwork.id : selected?.id}
+          paused={Boolean(selected) || toolsOpen || filtersOpen || profileOpen || slideshowPaused}
+          onPage={(page) => void loadGallery(storyParams(page), undefined, true)}
           onCategoryEnd={advanceStoryCategory}
+          onPreviousCategory={previousStoryCategory}
           onSelect={setSelected}
           onClose={openHome}
         />}
@@ -423,22 +515,21 @@ export default function HomePage() {
       <section className="museum-category-dock" aria-label="أقسام المعرض">
         {storyOpen && activeView === "gallery" ? <div className="gallery-screen-header">
           <button className="gallery-header-back" onClick={openHome} aria-label="عودة"><ChevronLeft size={25} /></button>
-          <div className="gallery-screen-logos"><Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية" width={150} height={130} /><span aria-hidden="true" /><Image src="/assets/logos/al-motaqadimah-official.png" alt="شعار شركة المدارس المتقدمة" width={150} height={110} /></div>
-          <button className="gallery-header-menu" onClick={() => setToolsOpen(true)}>معرضنا <Menu size={21} /></button>
+          <div className="gallery-category-heading"><strong>أقسام المعرض</strong><small>10 أقسام إبداعية بانتظاركم</small></div>
+          <button className="gallery-header-menu" onClick={() => setToolsOpen(true)} aria-label="أدوات المعرض"><Menu size={21} /></button>
         </div> : <motion.button className="discovery-trigger" tabIndex={0} onClick={() => chooseCategory("remote")} whileTap={reduceMotion ? undefined : { scale: .965 }}>
           <span className="discovery-copy">
             <span className="discovery-heading"><strong>عالم الألوان والإبداع</strong><small>10 أقسام إبداعية بانتظاركم</small></span>
             <b className="discovery-play"><CirclePlay size={27} /><span>استكشف أقسام المعرض<small>اكتشفوا أعمالنا الفنية!</small></span><Image className="discovery-hand" src="/assets/decorations/tap-hand.webp" alt="" width={200} height={276} /></b>
           </span>
         </motion.button>}
-        {storyOpen && activeView === "gallery" && <div className="gallery-category-heading"><strong>أقسام المعرض</strong><small>10 أقسام إبداعية بانتظاركم</small></div>}
         <AnimatePresence initial={false}>
         {storyOpen && activeView === "gallery" && <motion.div className="museum-category-track"
           initial={reduceMotion ? false : { height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduceMotion ? 0 : .35 }}>
           <div className="museum-category-list" id="category-dock" tabIndex={-1}>
             {visibleCategories.map((category, index) => {
               const active = selectedCategory === category.slug || (category.slug === "__all__" && !selectedCategory);
-              return <motion.button key={category.slug} className={`museum-category-tile category-${category.tint} ${active ? "is-selected" : ""}`} onClick={() => chooseCategory(category.slug)} aria-pressed={active} aria-label={`عرض ${category.name}`} initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} whileHover={reduceMotion ? undefined : { scale: 1.025 }} whileTap={reduceMotion ? undefined : { scale: 0.96 }} transition={{ delay: reduceMotion ? 0 : index * .025 }}>
+              return <motion.button key={category.slug} className={`museum-category-tile category-${category.tint} ${active ? "is-selected" : ""}`} onClick={() => chooseCategory(category.slug)} aria-pressed={active} aria-label={`عرض ${category.name}`} initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: active ? 1 : .68, y: 0, scale: reduceMotion ? 1 : active ? 1.045 : 1 }} whileHover={reduceMotion ? undefined : { scale: active ? 1.045 : 1.025 }} whileTap={reduceMotion ? undefined : { scale: 0.96 }} transition={{ duration: reduceMotion ? 0 : .25, delay: reduceMotion ? 0 : index * .025 }}>
                 <span className="museum-tile-art" aria-hidden="true">
                   <Image src={category.coverUrl || `/assets/category-scenes/${category.asset}`} alt="" fill sizes="(max-width: 900px) 50vw, 12vw" />
                 </span>
