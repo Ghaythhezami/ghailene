@@ -8,7 +8,7 @@ import type { PublicArtwork } from "@basmat-fan/shared";
 
 type Pagination = { page: number; pages: number; total: number };
 
-export function GalleryStory({ artworks, category, loading, error, pagination, initialArtworkId, paused, onPage, onSelect, onClose }: {
+export function GalleryStory({ artworks, category, loading, error, pagination, initialArtworkId, paused, onPage, onCategoryEnd, onSelect, onClose }: {
   artworks: PublicArtwork[];
   category: string;
   loading: boolean;
@@ -17,6 +17,7 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
   initialArtworkId?: string;
   paused: boolean;
   onPage: (page: number) => void;
+  onCategoryEnd: (empty: boolean) => void;
   onSelect: (artwork: PublicArtwork) => void;
   onClose: () => void;
 }) {
@@ -26,9 +27,11 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const reducedMotion = useReducedMotion();
   const onPageRef = useRef(onPage);
+  const onCategoryEndRef = useRef(onCategoryEnd);
   const pendingPageSide = useRef<"first" | "last" | null>(null);
   const suppressClickUntil = useRef(0);
   onPageRef.current = onPage;
+  onCategoryEndRef.current = onCategoryEnd;
   const artwork = artworks[artIndex];
   const image = artwork?.images[0];
   const isPaused = paused || userPaused || hidden || loading || Boolean(reducedMotion);
@@ -54,11 +57,11 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
   const next = useCallback(() => {
     if (!artwork || loading) return;
     if (artIndex + 1 < artworks.length) setArtIndex(artIndex + 1);
-    else if (pagination.pages > 1) {
+    else if (pagination.page < pagination.pages) {
       pendingPageSide.current = "first";
-      onPageRef.current(pagination.page < pagination.pages ? pagination.page + 1 : 1);
+      onPageRef.current(pagination.page + 1);
     }
-    else setArtIndex(0);
+    else onCategoryEndRef.current(false);
   }, [artwork, artworks.length, artIndex, loading, pagination.page, pagination.pages]);
 
   function previous() {
@@ -73,9 +76,15 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
 
   useEffect(() => {
     if (!artwork || isPaused || error) return;
-    const timer = window.setTimeout(next, 3000);
+    const timer = window.setTimeout(next, 5000);
     return () => window.clearTimeout(timer);
   }, [artwork, error, isPaused, artIndex, next]);
+
+  useEffect(() => {
+    if (artwork || isPaused || error) return;
+    const timer = window.setTimeout(() => onCategoryEndRef.current(true), 600);
+    return () => window.clearTimeout(timer);
+  }, [artwork, error, isPaused]);
 
   return <motion.section className="gallery-story" aria-label={`عرض ${category}`} aria-busy={loading}
     initial={reducedMotion ? false : { opacity: 0, y: 28, scale: .97 }}
@@ -99,7 +108,7 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
         >
           {prevArtwork?.images[0] && <button className="story-neighbor story-neighbor-prev" onClick={previous} aria-label="العمل السابق"><Image src={prevArtwork.images[0].url} alt="" fill sizes="22vw" /></button>}
           {nextArtwork?.images[0] && <button className="story-neighbor story-neighbor-next" onClick={next} aria-label="العمل التالي"><Image src={nextArtwork.images[0].url} alt="" fill sizes="22vw" /></button>}
-          <AnimatePresence mode="wait" initial={false}>
+          <AnimatePresence initial={false}>
             <motion.button type="button" onClick={() => { if (Date.now() >= suppressClickUntil.current) onSelect(artwork); }} aria-label={`عرض ${artwork.title}`} key={artwork.id} className="story-image story-main-image" initial={reducedMotion ? false : { opacity: 0, x: -55, scale: .94 }} animate={{ opacity: 1, x: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, x: 55, scale: .94 }} transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}>
               {image ? <Image src={image.url} alt={image.alt || artwork.title} fill sizes="(max-width: 900px) 82vw, 55vw" /> : <div className="story-placeholder"><Palette size={36} /><span>{artwork.videoUrl ? "عمل مرئي" : "عمل فني"}</span></div>}
             </motion.button>
@@ -108,9 +117,10 @@ export function GalleryStory({ artworks, category, loading, error, pagination, i
           <button className="story-arrow story-next" onClick={next} aria-label="التالي"><ChevronLeft size={20} /></button>
         </div>
         <div className="story-copy">
+          <Image className="story-avatar" src="/assets/decorations/visitor-avatar.webp" alt="" width={160} height={191} />
           <div><small>{artwork.studentDisplayName}{artwork.gradeName ? ` · ${artwork.gradeName}` : ""}</small><h3>{artwork.title}</h3>{artwork.description && <p>{artwork.description}</p>}</div>
-          <div className="story-actions"><button onClick={() => onSelect(artwork)}><Eye size={16} /> عرض العمل</button><button onClick={() => setUserPaused(!userPaused)} aria-label={userPaused ? "تشغيل العرض" : "إيقاف العرض مؤقتًا"} disabled={Boolean(reducedMotion)}>{userPaused || reducedMotion ? <Play size={16} /> : <Pause size={16} />}</button></div>
         </div>
+        <div className="story-actions"><button onClick={() => onSelect(artwork)} aria-label="عرض العمل"><Eye size={16} /></button><button onClick={() => setUserPaused(!userPaused)} aria-label={userPaused ? "تشغيل العرض" : "إيقاف العرض مؤقتًا"} disabled={Boolean(reducedMotion)}>{userPaused || reducedMotion ? <Play size={16} /> : <Pause size={16} />}</button></div>
         <div className="story-carousel-status">
           <strong>{String((pagination.page - 1) * 12 + artIndex + 1).padStart(2, "0")} / {String(pagination.total || artworks.length).padStart(2, "0")}</strong>
           <div className="story-progress-bars" aria-label="تقدم العرض">{artworks.slice(0, 12).map((item, index) => <button key={item.id} onClick={() => setArtIndex(index)} aria-label={`عرض العمل ${index + 1}`} aria-current={index === artIndex ? "true" : undefined} className={index === artIndex ? "is-active" : ""} />)}</div>

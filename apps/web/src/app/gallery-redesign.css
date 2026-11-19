@@ -1,0 +1,272 @@
+.museum-app.museum-app-story {
+  grid-template-rows: minmax(0, 46fr) minmax(0, 54fr) !important;
+  justify-items: center;
+  background: #cef4f8 url("/assets/decorations/gallery-sky.webp") center / auto 100% no-repeat;
+}
+
+.museum-app-story .museum-category-dock {
+  position: relative;
+  width: min(100%, 600px);
+  gap: 0;
+  padding: max(4px, env(safe-area-inset-top)) 8px 3px;
+  overflow: visible;
+}
+
+.museum-app-story .museum-category-dock::after {
+  position: absolute;
+  z-index: 0;
+  top: 13%;
+  left: 0;
+  width: clamp(45px, 17vw, 100px);
+  height: 22%;
+  background: url("/assets/decorations/paint-palette.webp") center / contain no-repeat;
+  filter: drop-shadow(0 3px 4px #078d9d55);
+  pointer-events: none;
+  content: "";
+}
+
+.museum-app-story .gallery-screen-header {
+  position: relative;
+  z-index: 1;
+  height: 24%;
+  min-height: 0;
+  direction: ltr;
+}
+.museum-app-story .gallery-screen-header button {
+  display: inline-flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #a9fbff;
+  background: linear-gradient(160deg, #40cdda, #00a0b0 55%, #006b7c);
+  box-shadow: inset 0 2px 3px #ffffffbb, 0 3px 0 #087488, 0 6px 9px #0a6d8055;
+}
+.museum-app-story .gallery-header-back {
+  width: clamp(36px, 5vh, 50px);
+  height: clamp(36px, 5vh, 50px);
+  padding: 0;
+  border-radius: 50%;
+}
+.museum-app-story .gallery-header-menu {
+  gap: 5px;
+  height: clamp(36px, 5vh, 50px);
+  padding: 0 10px;
+  border-radius: 30px;
+  font-size: clamp(11px, 1.7vh, 15px);
+}
+.museum-app-story .gallery-screen-logos { flex: 1; justify-content: center; gap: 8px; }
+.museum-app-story .gallery-screen-logos img { max-width: 42%; height: 95%; }
+.museum-app-story .gallery-screen-logos span { width: 1px; height: 70%; background: #087c91; }
+
+.museum-app-story .gallery-category-heading {
+  position: relative;
+  z-index: 1;
+  height: 17%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0 2px;
+}
+.museum-app-story .gallery-category-heading strong {
+  display: grid;
+  width: min(53%, 310px);
+  min-height: 0;
+  flex: 1;
+  place-items: center;
+  padding: 0 10px;
+  border: 2px solid #a4eff1;
+  border-radius: 42% 42% 38% 38% / 50%;
+  background: linear-gradient(175deg, #26c9d2, #009aa8 55%, #006e7d);
+  box-shadow: inset 0 3px 3px #e6ffffa0, 0 3px 0 #087d89, 0 5px 8px #007b8e4d;
+  font-size: clamp(17px, 3.2vh, 30px);
+  line-height: 1;
+  text-shadow: 0 2px 2px #007080;
+}
+.museum-app-story .gallery-category-heading small {
+  color: #075969;
+  font-size: clamp(10px, 1.7vh, 15px);
+  font-weight: 900;
+}
+.museum-app-story .museum-category-track {
+  position: relative;
+  z-index: 1;
+  padding: 5px;
+  border: 2px solid #f3ffff;
+  border-radius: 25px 22px 24px 20px;
+  background: linear-gradient(145deg, #f8ffffdb, #c8eff2dd);
+  box-shadow: inset 0 2px 5px #fff, 0 5px 10px #0d8d9f55;
+}
+.museum-app-story .museum-category-list {
+  gap: 4px 6px;
+  direction: ltr;
+}
+.museum-app-story .museum-category-tile,
+.museum-app-story .museum-category-tile:nth-child(n) {
+  position: relative;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 1px 3px 1px 32%;
+  overflow: hidden;
+  border: 1px solid #ecffff;
+  border-radius: 14px;
+  background: #f7ffff;
+  box-shadow: inset 0 2px 4px #fff, 0 2px 0 #8ed4db, 0 3px 5px #056d823b;
+  animation: none;
+  direction: ltr;
+}
+.museum-app-story .museum-category-tile::after {
+  z-index: 0;
+  inset: 0;
+  display: block;
+  height: auto;
+  background: linear-gradient(90deg, transparent 10%, #ffffff5c 32%, #ffffffeb 51%, #f6ffff 85%);
+}
+.museum-app-story .museum-tile-art,
+.museum-app-story .museum-category-tile .museum-tile-art {
+  position: absolute;
+  z-index: 0;
+  inset: 0 auto 0 0;
+  width: 50%;
+  height: 100%;
+  border-radius: 0;
+}
+.museum-app-story .museum-tile-art img { object-fit: cover; }
+.museum-app-story .museum-category-tile > strong,
+.museum-app-story .museum-category-tile:nth-child(n) > strong {
+  z-index: 1;
+  flex: 1;
+  max-width: 66%;
+  margin: 0;
+  color: #07576f;
+  font-size: clamp(9px, 1.6vh, 14px);
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: none;
+}
+.museum-app-story .museum-tile-arrow,
+.museum-app-story .museum-category-tile .museum-tile-arrow {
+  z-index: 1;
+  width: clamp(23px, 3.5vh, 33px);
+  height: clamp(23px, 3.5vh, 33px);
+  flex: 0 0 clamp(23px, 3.5vh, 33px);
+  border: 1px solid #9af4ed;
+  background: linear-gradient(#24bfcc, #00788b);
+  box-shadow: inset 0 1px #fff9, 0 2px 3px #08718366;
+}
+.museum-app-story .museum-category-tile.is-selected,
+.museum-app-story .museum-category-tile.is-selected:nth-child(n) {
+  border: 2px solid #73be2e;
+  box-shadow: 0 0 0 2px #c7f272, inset 0 0 8px #a6e75b, 0 3px 7px #38994966;
+}
+.museum-app-story .museum-category-tile.is-selected .museum-tile-arrow { background: linear-gradient(#5ed35b, #11943f); }
+.museum-app-story .museum-category-pages { flex: 0 0 auto; color: #075969; }
+.museum-app-story .museum-category-pages button { min-height: 24px; background: #c9f5eb; color: #075969; }
+
+.museum-app-story .museum-stage {
+  width: min(100%, 600px);
+  padding: 4px 10px max(5px, env(safe-area-inset-bottom));
+  overflow: visible;
+  background: transparent;
+}
+.museum-app-story .gallery-story {
+  position: relative;
+  height: 100%;
+  padding: 5px;
+  overflow: visible;
+  border: 2px solid #e6ffff;
+  border-radius: 25px 28px 24px 28px;
+  background: linear-gradient(160deg, #49d9e47a, #eaffff89 60%, #9de5d89c), url("/assets/decorations/cinematic-school.webp") center bottom / cover;
+  box-shadow: inset 0 2px 8px #fff9, 0 5px 12px #00849466;
+}
+.museum-app-story .story-body { position: relative; gap: 3px; }
+.museum-app-story .story-frame.story-carousel {
+  overflow: visible;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow: none;
+}
+.museum-app-story .story-main-image {
+  inset: 3% 12% 9%;
+  overflow: hidden;
+  border: clamp(5px, 1.2vh, 10px) ridge #e4c47f;
+  border-radius: 5px;
+  background: #fffdf6;
+  box-shadow: 0 2px 0 #fff7cf, 0 5px 10px #38656a88, inset 0 0 0 2px #997948;
+}
+.museum-app-story .story-main-image img { object-fit: contain; }
+.museum-app-story .story-arrow {
+  width: clamp(36px, 5.2vh, 48px);
+  height: clamp(36px, 5.2vh, 48px);
+  border: 2px solid #e8ffff;
+  background: linear-gradient(#fff, #e6ffff);
+  color: #008b9d;
+  box-shadow: 0 3px 8px #147e8c66;
+}
+.museum-app-story .story-prev { right: 0; }
+.museum-app-story .story-next { left: 0; }
+.museum-app-story .story-copy {
+  position: absolute;
+  z-index: 5;
+  right: 16%;
+  bottom: 5%;
+  left: 16%;
+  min-height: 0;
+  justify-content: center;
+  gap: 7px;
+  padding: 3px 12px;
+  border: 2px solid #fff;
+  border-radius: 40px;
+  background: linear-gradient(#fff, #ecffff);
+  box-shadow: 0 4px 0 #73cfd0, 0 7px 10px #006a8066;
+  text-align: center;
+}
+.museum-app-story .story-copy > div { min-width: 0; overflow: hidden; }
+.museum-app-story .story-copy h3, .museum-app-story .story-copy small {
+  display: block;
+  overflow: hidden;
+  color: #075969;
+  font-size: clamp(10px, 1.6vh, 15px);
+  font-weight: 900;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.museum-app-story .story-avatar {
+  width: clamp(31px, 5.5vh, 52px);
+  height: clamp(31px, 5.5vh, 52px);
+  flex: 0 0 auto;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: #d6f5f3;
+  object-fit: cover;
+  object-position: center top;
+}
+.museum-app-story .story-actions { position: absolute; z-index: 6; top: 5px; right: 5px; gap: 3px; }
+.museum-app-story .story-actions button {
+  width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid #fff;
+  background: #f2ffffe8;
+  color: #007f90;
+}
+.museum-app-story .story-carousel-status { justify-content: center; min-height: 20px; }
+.museum-app-story .story-carousel-status strong { font-size: 10px; }
+.museum-app-story .story-progress-bars { justify-content: center; }
+.museum-app-story .story-progress-bars button { width: 10px; height: 10px; background: #9dcbd2; }
+.museum-app-story .story-progress-bars button.is-active { background: #009aac; box-shadow: 0 1px 4px #086b78; }
+.museum-app-story .story-message { color: #075969; font-weight: 800; }
+.museum-app-story .story-message button, .museum-app-story .story-pagination button { border-color: #9fe3df; background: #edfffb; color: #075969; }
+
+@media (max-height: 650px) {
+  .museum-app-story .museum-category-dock { padding-top: 2px; }
+  .museum-app-story .gallery-screen-header { height: 22%; }
+  .museum-app-story .gallery-category-heading { height: 18%; }
+  .museum-app-story .museum-category-track { padding: 3px; }
+  .museum-app-story .museum-category-list { gap: 2px 4px; }
+  .museum-app-story .museum-category-tile > strong,
+  .museum-app-story .museum-category-tile:nth-child(n) > strong { font-size: 9px; }
+  .museum-app-story .story-actions button { width: 30px; min-height: 30px; }
+}

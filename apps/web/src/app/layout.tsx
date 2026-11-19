@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { PwaRegistration } from "@/components/pwa-registration";
 import "./globals.css";
 import "./home-redesign.css";
+import "./gallery-redesign.css";
 
 export const metadata: Metadata = {
   title: "بصمة فن | معرض الإبداع الفني الرقمي",

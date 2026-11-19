@@ -13,6 +13,7 @@ import type {
   PublicArtwork, PublicCategory, PublicFilterOptions, PublicGalleryEvent, PublicSettings,
 } from "@basmat-fan/shared";
 import { fetchPublicContent } from "@/lib/api";
+import { nextStoryCategory } from "@/lib/gallery-sequence.mjs";
 import { InstallAppButton } from "@/components/install-app-button";
 import { GalleryStory } from "@/components/gallery-story";
 import { CinematicIntro } from "@/components/CinematicIntro";
@@ -77,6 +78,7 @@ export default function HomePage() {
   const profileDialogRef = useRef<HTMLDialogElement>(null);
   const [pagination, setPagination] = useState({ page: 1, pageSize: 12, total: 0, pages: 0 });
   const galleryRequest = useRef(0);
+  const emptyStoryCategories = useRef(new Set<string>());
   const selectedRef = useRef<PublicArtwork | null>(null);
   selectedRef.current = selected;
 
@@ -240,7 +242,7 @@ export default function HomePage() {
     if (storyOpen && activeView === "gallery") {
       document.querySelector<HTMLButtonElement>(".museum-category-tile")?.focus();
     } else {
-      chooseCategory("__all__");
+      chooseCategory("remote");
     }
   }
 
@@ -250,6 +252,7 @@ export default function HomePage() {
     setActiveView("gallery");
     setSelectedCategory("");
     setStoryOpen(false);
+    emptyStoryCategories.current.clear();
     setSearch("");
     setGradeFilter("");
     setClassFilter("");
@@ -262,6 +265,7 @@ export default function HomePage() {
 
   function chooseCategory(slug: string) {
     const next = slug === "__all__" ? "" : slug;
+    emptyStoryCategories.current.clear();
     setSelectedCategory(next);
     setActiveView("gallery");
     setSearch(""); setGradeFilter(""); setClassFilter(""); setProjectFilter(""); setYearFilter("");
@@ -271,6 +275,14 @@ export default function HomePage() {
       if (transitionTimer.current) clearTimeout(transitionTimer.current);
       transitionTimer.current = setTimeout(() => { setTransitioning(false); setStoryOpen(true); }, reduceMotion ? 0 : 3000);
     }
+  }
+
+  function advanceStoryCategory(empty: boolean) {
+    const next = nextStoryCategory(categoryCards.map((category) => category.slug), selectedCategory, emptyStoryCategories.current, empty);
+    if (!next) return;
+    setSelectedCategory(next);
+    setCategoryPage(Math.floor(categoryCards.findIndex((category) => category.slug === next) / 10));
+    void loadGallery(galleryParams(1, next));
   }
 
   function applyGalleryFilters(event: FormEvent<HTMLFormElement>) {
@@ -350,6 +362,7 @@ export default function HomePage() {
           initialArtworkId={selected?.id}
           paused={Boolean(selected) || toolsOpen || filtersOpen || profileOpen}
           onPage={(page) => void loadGallery(galleryParams(page))}
+          onCategoryEnd={advanceStoryCategory}
           onSelect={setSelected}
           onClose={openHome}
         />}
@@ -409,10 +422,10 @@ export default function HomePage() {
 
       <section className="museum-category-dock" aria-label="أقسام المعرض">
         {storyOpen && activeView === "gallery" ? <div className="gallery-screen-header">
-          <button onClick={openHome}>عودة</button>
-          <div className="gallery-screen-logos"><Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية" width={50} height={50} /><Image src="/assets/logos/al-motaqadimah-official.png" alt="شعار شركة المدارس المتقدمة" width={65} height={40} /></div>
-          <button onClick={() => setToolsOpen(true)}>معرضنا</button>
-        </div> : <motion.button className="discovery-trigger" tabIndex={0} onClick={() => chooseCategory("__all__")} whileTap={reduceMotion ? undefined : { scale: .965 }}>
+          <button className="gallery-header-back" onClick={openHome} aria-label="عودة"><ChevronLeft size={25} /></button>
+          <div className="gallery-screen-logos"><Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية" width={150} height={130} /><span aria-hidden="true" /><Image src="/assets/logos/al-motaqadimah-official.png" alt="شعار شركة المدارس المتقدمة" width={150} height={110} /></div>
+          <button className="gallery-header-menu" onClick={() => setToolsOpen(true)}>معرضنا <Menu size={21} /></button>
+        </div> : <motion.button className="discovery-trigger" tabIndex={0} onClick={() => chooseCategory("remote")} whileTap={reduceMotion ? undefined : { scale: .965 }}>
           <span className="discovery-copy">
             <span className="discovery-heading"><strong>عالم الألوان والإبداع</strong><small>10 أقسام إبداعية بانتظاركم</small></span>
             <b className="discovery-play"><CirclePlay size={27} /><span>استكشف أقسام المعرض<small>اكتشفوا أعمالنا الفنية!</small></span><Image className="discovery-hand" src="/assets/decorations/tap-hand.webp" alt="" width={200} height={276} /></b>
