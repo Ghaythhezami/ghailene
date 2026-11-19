@@ -414,7 +414,7 @@ export default function HomePage() {
           <button onClick={() => setToolsOpen(true)}>معرضنا</button>
         </div> : <motion.button className="discovery-trigger" onClick={() => chooseCategory("__all__")} whileTap={reduceMotion ? undefined : { scale: .965 }}>
           <Image className="discovery-palette" src="/assets/decorations/paint-palette.webp" width={180} height={140} alt="" />
-          <span className="discovery-copy"><strong>عالم الألوان والإبداع</strong><small>اكتشفوا أعمالنا الفنية!</small><b className="discovery-play"><CirclePlay size={22} /> استكشف أقسام المعرض</b><small>10 أقسام إبداعية بانتظاركم</small></span>
+          <span className="discovery-copy"><strong>عالم الألوان والإبداع</strong><small>اكتشفوا أعمالنا الفنية!</small><b className="discovery-play"><CirclePlay size={22} /> استكشف أقسام المعرض<Image className="discovery-hand" src="/assets/decorations/tap-hand.webp" alt="" width={200} height={276} /></b><small>10 أقسام إبداعية بانتظاركم</small></span>
         </motion.button>}
         {storyOpen && activeView === "gallery" && <div className="gallery-category-heading"><strong>أقسام المعرض</strong><small>10 أقسام إبداعية بانتظاركم</small></div>}
         <AnimatePresence initial={false}>
