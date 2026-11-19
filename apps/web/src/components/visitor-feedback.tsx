@@ -3,7 +3,7 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Eye, Send, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Send, UsersRound, X } from "lucide-react";
 import { z } from "zod";
 import { apiBase } from "@/lib/api-base";
 
@@ -23,6 +23,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export function VisitorFeedback() {
   const counted = useRef(false);
   const feedbackRequest = useRef(0);
+  const restoreFeedbackFocus = useRef(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const detailRef = useRef<HTMLDialogElement>(null);
   const reduceMotion = useReducedMotion();
@@ -40,6 +41,9 @@ export function VisitorFeedback() {
   const [countError, setCountError] = useState(false);
   const [feedbackError, setFeedbackError] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [feedbackFocused, setFeedbackFocused] = useState(false);
+  const [feedbackHovered, setFeedbackHovered] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
 
   const loadFeedback = useCallback(async (page: number, side: "first" | "last" = "first") => {
     const requestId = ++feedbackRequest.current;
@@ -52,9 +56,16 @@ export function VisitorFeedback() {
       setIndex(side === "last" ? Math.max(0, result.items.length - 1) : 0);
       setFeedbackError(false);
     } catch {
-      if (requestId === feedbackRequest.current) setFeedbackError(true);
+      if (requestId === feedbackRequest.current) { restoreFeedbackFocus.current = false; setFeedbackError(true); }
     } finally {
       if (requestId === feedbackRequest.current) setLoadingFeedback(false);
+    }
+  }, []);
+
+  const focusFeedbackEntry = useCallback((element: HTMLButtonElement | null) => {
+    if (element && restoreFeedbackFocus.current) {
+      restoreFeedbackFocus.current = false;
+      element.focus();
     }
   }, []);
 
@@ -78,6 +89,27 @@ export function VisitorFeedback() {
     else if (!detailOpen && dialog?.open) dialog.close();
   }, [detailOpen]);
 
+  const moveFeedback = useCallback((direction: -1 | 1) => {
+    const next = index + direction;
+    if (next >= 0 && next < feedback.length) setIndex(next);
+    else if (pagination.pages <= 1) setIndex(direction > 0 ? 0 : feedback.length - 1);
+    else if (direction > 0) void loadFeedback(pagination.page < pagination.pages ? pagination.page + 1 : 1);
+    else void loadFeedback(pagination.page > 1 ? pagination.page - 1 : pagination.pages, "last");
+  }, [feedback.length, index, loadFeedback, pagination.page, pagination.pages]);
+
+  useEffect(() => {
+    const updateVisibility = () => setPageVisible(document.visibilityState === "visible");
+    updateVisibility();
+    document.addEventListener("visibilitychange", updateVisibility);
+    return () => document.removeEventListener("visibilitychange", updateVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (reduceMotion || !pageVisible || feedbackFocused || feedbackHovered || dialogOpen || detailOpen || loadingFeedback || feedbackError || pagination.total < 2) return;
+    const timer = window.setTimeout(() => moveFeedback(1), 2500);
+    return () => window.clearTimeout(timer);
+  }, [reduceMotion, pageVisible, feedbackFocused, feedbackHovered, dialogOpen, detailOpen, loadingFeedback, feedbackError, pagination.total, moveFeedback]);
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true); setError(""); setStatus("");
@@ -100,23 +132,15 @@ export function VisitorFeedback() {
     } finally { setBusy(false); }
   }
 
-  function moveFeedback(direction: -1 | 1) {
-    const next = index + direction;
-    if (next >= 0 && next < feedback.length) setIndex(next);
-    else if (direction > 0 && pagination.page < pagination.pages) void loadFeedback(pagination.page + 1);
-    else if (direction < 0 && pagination.page > 1) void loadFeedback(pagination.page - 1, "last");
-  }
-
   return <div className="visitor-panel">
     <section className="visitor-counter-card" aria-label="زوار معرضنا">
-      <Image className="visitor-children" src="/assets/decorations/father-and-son.webp" alt="" width={850} height={708} />
+      <Image className="visitor-children" src="/assets/decorations/father-son-painting.webp" alt="" width={850} height={716} />
       <div className="visitor-count">
-        <h2><Eye aria-hidden="true" size={23} /> زوار معرضنا</h2>
+        <h2><UsersRound aria-hidden="true" size={23} /> زوار معرضنا</h2>
         <strong dir="ltr">{count === null ? "—" : count.toLocaleString("en-US")}</strong>
         <p>يسعدنا وجودكم معنا!</p>
         {countError && <p className="visitor-load-error" role="status">تعذر تحميل عدد الزوار.</p>}
       </div>
-      <Image className="visitor-easel" src="/assets/decorations/easel.webp" alt="" width={410} height={800} />
     </section>
     <section className="feedback-card" aria-labelledby="feedback-title">
       <div className="feedback-heading">
@@ -125,20 +149,20 @@ export function VisitorFeedback() {
       </div>
       <div className="feedback-content">
         <button className="feedback-open" type="button" onClick={() => { setError(""); setDialogOpen(true); }}><Send size={17} aria-hidden="true" /> إرسال رأيي</button>
-        <div className="visitor-recent">
+        <div className="visitor-recent" onPointerEnter={(event) => { if (event.pointerType === "mouse") setFeedbackHovered(true); }} onPointerLeave={(event) => { if (event.pointerType === "mouse") setFeedbackHovered(false); }} onFocusCapture={() => setFeedbackFocused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFeedbackFocused(false); }}>
           <h3>آخر آراء الزوار</h3>
           {feedbackError && <p role="status">تعذر تحميل آراء الزوار. <button onClick={() => void loadFeedback(pagination.page)}>إعادة المحاولة</button></p>}
           {!feedbackError && feedback.length === 0 && <p>{loadingFeedback ? "جارٍ تحميل الآراء..." : "بانتظار مشاركاتكم الجميلة."}</p>}
           <AnimatePresence mode="wait" initial={false}>
-            {feedback[index] && <motion.button type="button" className="feedback-entry" onClick={() => setDetailOpen(true)} aria-label={`قراءة رأي ${feedback[index].name}`} key={feedback[index].id} initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: -8 }} transition={{ duration: .22 }}><Image className="feedback-avatar" src="/assets/decorations/visitor-avatar.webp" alt="" width={160} height={191} /><span className="feedback-entry-copy"><strong>{feedback[index].name}</strong><span>{feedback[index].message}</span></span></motion.button>}
+            {feedback[index] && <motion.button ref={focusFeedbackEntry} type="button" className="feedback-entry" onClick={() => setDetailOpen(true)} onKeyDown={(event) => { if (pagination.total > 1 && (event.key === "ArrowLeft" || event.key === "ArrowRight")) { event.preventDefault(); restoreFeedbackFocus.current = true; moveFeedback(event.key === "ArrowLeft" ? 1 : -1); } }} aria-label={`قراءة رأي ${feedback[index].name}`} aria-describedby="feedback-keyboard-help" key={feedback[index].id} initial={reduceMotion ? false : { opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} exit={reduceMotion ? undefined : { opacity: 0, x: -18 }} transition={{ duration: .22 }}><Image className="feedback-avatar" src="/assets/decorations/visitor-avatar.webp" alt="" width={160} height={191} /><span className="feedback-entry-copy"><strong>{feedback[index].name}</strong><span>{feedback[index].message}</span></span></motion.button>}
           </AnimatePresence>
-          {pagination.total > 1 && <nav className="feedback-navigation" aria-label="التنقل بين آراء الزوار">
-            <button type="button" onClick={() => moveFeedback(-1)} disabled={loadingFeedback || (pagination.page === 1 && index === 0)} aria-label="الرأي السابق"><ChevronRight size={17} /></button>
-            <span dir="ltr">{(pagination.page - 1) * 10 + index + 1} / {pagination.total}</span>
-            <button type="button" onClick={() => moveFeedback(1)} disabled={loadingFeedback || (pagination.page >= pagination.pages && index >= feedback.length - 1)} aria-label="الرأي التالي"><ChevronLeft size={17} /></button>
-          </nav>}
+          <span id="feedback-keyboard-help" className="sr-only">استخدم مفاتيح الأسهم للتنقل بين الآراء.</span>
           {status && <p className="sr-only" role="status">{status}</p>}
         </div>
+        {reduceMotion && pagination.total > 1 && <nav className="feedback-navigation" aria-label="التنقل بين آراء الزوار">
+          <button type="button" onClick={() => moveFeedback(-1)} disabled={loadingFeedback} aria-label="الرأي السابق"><ChevronRight size={17} /></button>
+          <button type="button" onClick={() => moveFeedback(1)} disabled={loadingFeedback} aria-label="الرأي التالي"><ChevronLeft size={17} /></button>
+        </nav>}
       </div>
       <dialog ref={dialogRef} className="feedback-dialog" aria-labelledby="feedback-dialog-title" onCancel={(event) => { if (busy) event.preventDefault(); }} onClose={() => setDialogOpen(false)}>
         <button className="feedback-dialog-close" type="button" onClick={() => setDialogOpen(false)} disabled={busy} aria-label="إغلاق"><X size={20} /></button>

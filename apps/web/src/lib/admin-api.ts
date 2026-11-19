@@ -25,6 +25,11 @@ export async function adminRequest<T>(path: string, init: RequestInit = {}): Pro
     } catch {
       // Keep the HTTP status message when an upstream response is not JSON.
     }
+    if (response.status === 403 && message === "Request origin is not allowed") {
+      message = "تم رفض الطلب بسبب عنوان الموقع. تأكد من إضافة عنوان الموقع إلى WEB_ORIGIN في إعدادات الخادم.";
+    } else if (response.status === 403 && message === "Administrator role is required") {
+      message = "يتطلب هذا الإجراء حساب مدير بصلاحية ADMIN.";
+    }
     throw new AdminRequestError(message, response.status);
   }
   if (response.status === 204) return undefined as T;

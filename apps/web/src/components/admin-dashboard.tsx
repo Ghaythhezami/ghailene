@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import { ChevronLeft, LogOut, Palette, Save, Trash2, Upload, X } from "lucide-react";
 import { AdminRequestError, adminRequest } from "@/lib/admin-api";
+import { compressImage } from "@/lib/compress-image";
 
 type Category = { id: string; name: string };
 type Artwork = {
@@ -50,7 +51,7 @@ export default function AdminDashboard() {
         throw new Error("اختر صورة JPEG أو PNG أو WebP بحجم لا يتجاوز 10 ميغابايت.");
       }
       const upload = new FormData();
-      upload.append("file", file);
+      upload.append("file", await compressImage(file));
       setUploadedPhoto(await adminRequest<UploadResult>("/admin/media/upload", { method: "POST", body: upload }));
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "تعذر رفع الصورة.");
@@ -126,9 +127,9 @@ export default function AdminDashboard() {
       if (photo) {
         if (!uploadedPhoto) throw new Error("يجب رفع الصورة بنجاح قبل حفظ العمل.");
         images = [
-          { ...uploadedPhoto, alt: String(data.get("title")), sortOrder: 0 },
+          { url: uploadedPhoto.url, publicId: uploadedPhoto.publicId, alt: String(data.get("title")), sortOrder: 0 },
           ...(editing?.images.slice(1).map((image) => ({
-            ...image, alt: image.alt ?? "", sortOrder: image.sortOrder,
+            url: image.url, publicId: image.publicId, alt: image.alt ?? "", sortOrder: image.sortOrder,
           })) ?? []),
         ];
       }
@@ -212,7 +213,7 @@ export default function AdminDashboard() {
             <img src={previewUrl || editing?.images[0]?.url} alt="معاينة الصورة" />
             <div>
               <strong>معاينة الصورة</strong>
-              <p role="status">{uploading ? "جارٍ رفع الصورة إلى Cloudinary..." : uploadedPhoto ? "تم رفع الصورة، يمكنك حفظ العمل." : photo ? "لم يتم رفع الصورة." : "الصورة الحالية"}</p>
+              <p role="status">{uploading ? "جارٍ تجهيز الصورة ورفعها إلى Cloudinary..." : uploadedPhoto ? "تم رفع الصورة، يمكنك حفظ العمل." : photo ? "لم يتم رفع الصورة." : "الصورة الحالية"}</p>
               {photo && !uploadedPhoto && !uploading && <button type="button" disabled={busy} onClick={() => void uploadPhoto(photo)}>إعادة محاولة الرفع</button>}
             </div>
           </div>}

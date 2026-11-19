@@ -114,7 +114,7 @@
 .school-teacher-name {
   padding: 8px 5px;
   border: 1px solid #fffef4;
-  border-radius: 38% 30% 32% 35% / 35% 36% 30% 33%;
+  border-radius: 24px 37px 25px 34px / 22px 23px 18px 20px;
   background: radial-gradient(ellipse at 50% 0%, #fff, transparent 75%), linear-gradient(160deg, #fffdf6, #fff1ce);
   box-shadow: inset 0 3px 5px #fff, inset 0 -3px 6px #e5bd6544, 0 4px 0 #e9d39f, 0 8px 14px #007e8d50;
 }
@@ -130,7 +130,7 @@
   gap: 2px;
   padding: 6px 3px;
   border: 1px solid #ffffffd9;
-  border-radius: 23% 19% 23% 18% / 25% 25% 23% 23%;
+  border-radius: 18px 24px 20px 15px / 20px 17px 22px 15px;
   background: linear-gradient(160deg, #ffffffeb, #d7faf5d9);
   color: #0c6076;
   box-shadow: inset 0 2px 6px #fff, inset 0 -3px 6px #81d8c433, 0 5px 10px #007b8c38;
@@ -160,7 +160,7 @@
   padding: 12px 14% 20px 19%;
   overflow: hidden;
   border: 2px solid #ffffffd9;
-  border-radius: 11% 9% 12% 10% / 23% 25% 24% 25%;
+  border-radius: 48px 30px 51px 25px / 33px 37px 28px 34px;
   background: url("/assets/decorations/flowing-ribbon.webp") center bottom / 100% 45px no-repeat, radial-gradient(ellipse at 50% 0%, #ffffffeb, #d8f8f8d9 75%, #a7e8e6e8);
   box-shadow: 0 4px 0 #0aa9ad80, 0 9px 18px #138a8b50, inset 0 3px 8px #fff, inset 0 -5px 10px #84d9d65c;
   text-align: center;
@@ -241,7 +241,7 @@
   justify-content: center;
   overflow: hidden;
   border: 2px solid #ffffffd9;
-  border-radius: 12% 10% 12% 11% / 29% 26% 27% 28%;
+  border-radius: 43px 27px 48px 30px / 31px 39px 25px 34px;
   background: url("/assets/decorations/flowing-ribbon.webp") center bottom / 100% 48px no-repeat, radial-gradient(ellipse at 50% 10%, #ffffffd9, #c2eff4dd 80%);
   box-shadow: 0 5px 12px #078c9b50, inset 0 3px 9px #fff, inset 0 -5px 10px #68cfcc4d;
 }
@@ -258,7 +258,7 @@
   overflow: hidden;
   padding: clamp(16px, 4vw, 30px) clamp(12px, 3vw, 26px) 25px;
   border: 2px solid #ffffffdf;
-  border-radius: 12% 11% 10% 10% / 25% 24% 25% 24%;
+  border-radius: 50px 32px 38px 27px / 31px 39px 28px 33px;
   background: radial-gradient(ellipse at 50% 0%, #ffffffed, transparent 65%), linear-gradient(155deg, #f5ffece8, #d8f5c8e8 72%, #efffe4eb);
   box-shadow: 0 6px 16px #408f7959, inset 0 3px 10px #fff, inset 0 -5px 10px #97db9b4d;
 }
@@ -492,6 +492,145 @@
   .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-open-tools { top: 4px; min-height: 36px; padding: 4px 9px; font-size: 11px; }
   .museum-app:not(.museum-app-story) .discovery-trigger { padding-top: 1px; padding-bottom: 5px; }
   .museum-app:not(.museum-app-story) .discovery-trigger .discovery-copy { gap: 0; line-height: 1.05; }
+}
+.museum-app:not(.museum-app-story):not(.museum-app-panel) {
+  grid-template-rows: minmax(0, 32fr) minmax(0, 36fr) minmax(0, 26fr) minmax(0, 6fr);
+  gap: clamp(2px, .4vh, 5px);
+}
+.school-hero-logos { height: 24%; flex-basis: 24%; }
+.school-hero-title { flex-direction: row-reverse; }
+.school-hero-title b { font-size: clamp(30px, 4.5vh, 52px); }
+.school-leadership > div { font-size: clamp(8px, 1.15vh, 12px); line-height: 1.15; }
+.museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-category-dock {
+  width: min(100%, 760px);
+}
+.museum-app:not(.museum-app-story) .discovery-trigger {
+  align-items: stretch;
+  padding: clamp(5px, 1vh, 10px) clamp(18px, 5vw, 35px) clamp(12px, 2vh, 20px);
+  border: 0;
+  border-radius: 4% 5% 7% 6% / 8% 8% 10% 12%;
+  background: linear-gradient(to bottom, #e9fcff1a 55%, #c9f8f6c7 100%), url("/assets/decorations/gallery-room.webp") center / cover no-repeat;
+  box-shadow: inset 0 3px 8px #fff9, 0 6px 12px #08798838;
+}
+.museum-app:not(.museum-app-story) .discovery-trigger::before,
+.museum-app:not(.museum-app-story) .discovery-trigger::after { display: none; }
+.museum-app:not(.museum-app-story) .discovery-trigger .discovery-copy {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.discovery-heading {
+  display: grid;
+  justify-items: center;
+  padding: 3px 16px;
+  border-radius: 22px;
+  background: #e9fffbdb;
+  box-shadow: 0 3px 9px #005f7530;
+}
+.museum-app:not(.museum-app-story) .discovery-heading strong { font-size: clamp(13px, 2vh, 21px); line-height: 1.2; }
+.museum-app:not(.museum-app-story) .discovery-heading small { font-size: clamp(10px, 1.4vh, 14px); }
+.museum-app:not(.museum-app-story) .discovery-copy .discovery-play {
+  width: min(calc(100% - 22px), 490px);
+  min-height: clamp(56px, 8vh, 76px);
+  gap: 10px;
+  padding: 5px clamp(14px, 3vw, 25px);
+  border: 2px solid #d6ffff;
+  border-radius: 40px;
+  background: linear-gradient(#42d8e6 0%, #06a5b7 42%, #007387 100%);
+  box-shadow: inset 0 3px 4px #efffffc4, inset 0 -4px 6px #00536685, 0 5px 0 #08717c, 0 8px 18px #007b8d80, 0 0 0 4px #e6ffc45c;
+  font-size: clamp(14px, 2.4vh, 23px);
+}
+.discovery-play > span { display: grid; justify-items: center; line-height: 1.2; }
+.museum-app:not(.museum-app-story) .discovery-play > span small { color: #fff; font-size: clamp(10px, 1.5vh, 15px); }
+.museum-app:not(.museum-app-story) .discovery-hand { right: 0; bottom: -14px; }
+.museum-app:not(.museum-app-story):not(.museum-app-panel) .visitor-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  padding: clamp(5px, 1vh, 10px);
+  overflow: hidden;
+  border: 2px solid #f5ffffe8;
+  border-radius: 38px 29px 35px 26px / 30px 35px 27px 32px;
+  background: url("/assets/decorations/flowing-ribbon.webp") center bottom / 100% clamp(12px, 2.3vh, 24px) no-repeat, linear-gradient(155deg, #f8ffffed, #c7f1f3eb);
+  box-shadow: inset 0 3px 9px #fff, 0 7px 15px #078c9b50;
+  direction: ltr;
+}
+.visitor-counter-card {
+  display: block;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.visitor-counter-card::before { display: none; }
+.visitor-counter-card .visitor-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  transform: none;
+}
+.visitor-counter-card .visitor-count h2 { font-size: clamp(12px, 1.8vh, 18px); }
+.visitor-counter-card .visitor-count h2 svg { width: clamp(16px, 2.1vh, 22px); }
+.visitor-counter-card .visitor-count > strong { font-size: clamp(29px, 4.8vh, 50px); }
+.visitor-counter-card .visitor-count p { font-size: clamp(9px, 1.3vh, 13px); }
+.visitor-counter-card .visitor-children {
+  bottom: -1%;
+  left: 0;
+  width: 100%;
+  height: 64%;
+  object-position: center bottom;
+}
+.feedback-card {
+  min-width: 0;
+  padding: 2px 6px 4px;
+  overflow: hidden;
+  border: 0;
+  border-left: 1px solid #50b7c180;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  direction: rtl;
+}
+.feedback-card::before { top: 0; left: 2px; width: clamp(22px, 3.2vh, 34px); height: clamp(22px, 3.2vh, 34px); }
+.feedback-card::after, .feedback-heading::before { display: none; }
+.feedback-heading h2 { font-size: clamp(14px, 2vh, 21px); }
+.feedback-heading p { font-size: clamp(9px, 1.2vh, 12px); }
+.feedback-content { display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 5px; }
+.feedback-open { order: 3; min-height: 40px; flex: 0 0 auto; align-self: stretch; }
+.visitor-recent { order: 1; width: 100%; height: auto; min-height: 0; flex: 1; padding: 0; border: 0; }
+.feedback-navigation { order: 2; }
+.visitor-recent h3 { font-size: clamp(10px, 1.4vh, 14px); }
+.feedback-entry { min-height: 42px; flex: 1; padding: 5px; border: 1px solid #fff; border-radius: 18px 15px 19px 14px; background: linear-gradient(#fff, #f2fffc); }
+.feedback-avatar { width: clamp(30px, 5.2vh, 48px); height: clamp(30px, 5.2vh, 48px); }
+.feedback-entry span { -webkit-line-clamp: 3; }
+@media (max-height: 650px) {
+  .school-hero-logos { height: 22%; flex-basis: 22%; }
+  .school-hero-copy { gap: 2px; }
+  .school-hero-title { min-height: 28px; flex: 0 0 auto; font-size: 11px; }
+  .school-hero-title b { font-size: 28px; }
+  .school-teacher-name { padding: 2px; }
+  .school-teacher-name h2 { font-size: 11px; line-height: 1.15; }
+  .school-teacher-name p { font-size: 9px; line-height: 1.15; }
+  .school-leadership > div { gap: 0; padding: 2px; font-size: 8px; line-height: 1.05; }
+  .school-leadership svg { width: 12px; height: 12px; }
+  .school-profile-button { min-height: 25px; padding: 2px 6px; font-size: 9px; }
+  .visitor-counter-card .visitor-children { height: 55%; }
+  .museum-app:not(.museum-app-story) .discovery-trigger .discovery-copy { gap: 2px; }
+  .museum-app:not(.museum-app-story) .discovery-copy .discovery-play { min-height: 48px; }
+  .feedback-heading p { margin-bottom: 1px; }
+  .feedback-content { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr) 36px; gap: 2px; }
+  .visitor-recent { grid-column: 1 / -1; grid-row: 1; }
+  .feedback-open { grid-column: 1 / -1; grid-row: 2; min-height: 36px; gap: 2px; padding: 3px; font-size: 10px; white-space: nowrap; }
+  .feedback-open svg { width: 14px; height: 14px; }
+  .feedback-content:has(.feedback-navigation) .feedback-open { grid-column: 1; }
+  .feedback-navigation { grid-column: 2; grid-row: 2; gap: 1px; }
+  .feedback-navigation button { width: 28px; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .discovery-play { animation: gallery-attention 2.8s ease-in-out infinite; }

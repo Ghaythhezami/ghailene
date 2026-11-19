@@ -5,8 +5,8 @@ An Arabic, right-to-left digital art museum for مدارس الابتكارية 
 ## What is included
 
 - Illustrated single-screen Arabic homepage with school/company marks, teacher portrait, visitor counter, feedback, and a button opening the full-screen gallery. Additional categories are accessible through the category page controls.
-- The gallery opens with a three-second school-logo transition and filterable artwork slideshow. Feedback appears immediately and administrators can hide or delete it; the visitor carousel fetches ten entries per page. Each homepage load increments a persistent visit counter.
-- An eight-second cinematic welcome plays once per browser session, can be skipped, and can be replayed from **أدوات المعرض**. Reduced-motion preferences show the composition without animation.
+- The gallery opens with a three-second school-logo transition and filterable artwork slideshow. Feedback appears immediately and administrators can hide or delete it; the visitor carousel fetches ten entries per page and advances every 2.5 seconds, pausing for interaction or reduced-motion preferences. Each homepage load increments a persistent visit counter.
+- A ten-second cinematic welcome plays once per browser session, can be skipped, and can be replayed from **أدوات المعرض**. Reduced-motion preferences show the composition without animation.
 - Installable progressive web app, with an offline connection notice; live gallery content still requires an internet connection.
 - Searchable, published-only public gallery with animated category stories, 3-second multi-image slides and 4-second single-image works, server-backed pagination, artwork details, student privacy labels, and a lightweight Three.js gallery-room scene. Auto-advance pauses for dialogs, hidden tabs, and reduced-motion preferences.
 - Separate `/admin` area for signing in and adding, editing, or deleting a category's artwork with text, a photo, and a display order.
@@ -66,7 +66,7 @@ For schema changes during development, use Prisma Migrate to create and review m
 
 The API accepts JPEG, PNG, WebP, MP4, and WebM files through the authenticated `/api/admin/media/upload` endpoint. Files go to Cloudinary; images are limited to 10 MB, video to 50 MB. Artwork metadata and Cloudinary public IDs are stored in PostgreSQL. Deleting an artwork removes associated Cloudinary media and database records. Cloudinary credentials are server-only.
 
-In the admin, selecting a photo previews it and uploads it before the artwork is saved. If the upload fails, retry it before saving. An uploaded photo that is replaced or abandoned before saving remains in Cloudinary and can be removed from its media library.
+In the admin, selecting a photo previews it and compresses it in the browser (targeting at most 2048 pixels on its longest side) before uploading it and saving the artwork. If compression would increase the file size, the original is used. If the upload fails, retry it before saving. An uploaded photo that is replaced or abandoned before saving remains in Cloudinary and can be removed from its media library.
 
 If Cloudinary reports `Invalid Signature`, check that Render's `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` belong to the same Cloudinary product environment, then restart or redeploy the API. Rotate any secret that has been disclosed and enter its replacement directly in Render.
 
