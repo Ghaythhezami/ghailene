@@ -230,8 +230,8 @@ export default function AdminDashboard() {
           <h2>آراء الزوار</h2>
           {feedback.length === 0 && <p>لا توجد آراء للمراجعة.</p>}
           {feedback.map((item) => <article key={item.id}>
-            <div><strong>{item.name}</strong><span>{item.message}</span><small>{item.approved ? "منشور" : "بانتظار المراجعة"}</small></div>
-            <button type="button" disabled={busy} onClick={() => void moderate(item, false)}>{item.approved ? "إخفاء" : "نشر"}</button>
+            <div><strong>{item.name}</strong><span>{item.message}</span><small>{item.approved ? "منشور" : "غير منشور"}</small></div>
+            <button type="button" disabled={busy} onClick={() => void moderate(item, false)}>{item.approved ? "رفض" : "نشر"}</button>
             <button type="button" disabled={busy} onClick={() => void moderate(item, true)}>حذف</button>
           </article>)}
         </section>

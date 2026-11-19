@@ -4,8 +4,8 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  ArrowUpLeft, BookOpen, ChevronDown, ChevronLeft, ChevronRight,
-  CirclePlay, Eye, Filter, Grid2X2, Image as ImageIcon,
+  ArrowUpLeft, BookOpen, ChevronLeft, ChevronRight,
+  CirclePlay, Eye, Filter, Grid2X2, Image as ImageIcon, Menu,
   Palette, Search, Sparkles, Star, UserRound, X,
 } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -36,7 +36,7 @@ type CategoryCard = PublicCategory & { asset: string; tint: string; note: string
 
 const defaultSettings: PublicSettings = {
   platformName: "بصمة فن",
-  subtitle: "الابتكارية ٢",
+  subtitle: "الابتكارية 2",
   slogan: "كل طالب فنان.. وكل إبداع له بصمة.",
   description: "معرض الإبداع الفني الرقمي",
   teacherName: "الأستاذ غيلان الخزامي",
@@ -60,7 +60,6 @@ export default function HomePage() {
   const [selected, setSelected] = useState<PublicArtwork | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [storyOpen, setStoryOpen] = useState(false);
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [search, setSearch] = useState("");
@@ -238,14 +237,16 @@ export default function HomePage() {
   }
 
   function focusCategories() {
-    setCategoriesOpen(true);
-    window.setTimeout(() => document.querySelector<HTMLButtonElement>(".museum-category-tile")?.focus(), 100);
+    if (storyOpen && activeView === "gallery") {
+      document.querySelector<HTMLButtonElement>(".museum-category-tile")?.focus();
+    } else {
+      chooseCategory("__all__");
+    }
   }
 
   function openHome() {
     if (transitionTimer.current) clearTimeout(transitionTimer.current);
     setTransitioning(false);
-    setCategoriesOpen(false);
     setActiveView("gallery");
     setSelectedCategory("");
     setStoryOpen(false);
@@ -290,7 +291,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""} ${activeView !== "gallery" ? "museum-app-panel" : ""} ${categoriesOpen ? "categories-expanded" : ""}`} id="top">
+    <main className={`museum-app ${storyOpen && activeView === "gallery" ? "museum-app-story" : ""} ${activeView !== "gallery" ? "museum-app-panel" : ""}`} id="top">
       {introOpen && <CinematicIntro onFinish={finishIntro} />}
       <AnimatePresence>{transitioning && <motion.div className="gallery-transition" role="status" aria-label="جارٍ فتح المعرض" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
         <motion.div className="gallery-transition-mark" initial={reduceMotion ? false : { scale: .65, rotate: -12 }} animate={{ scale: 1, rotate: 0 }} transition={{ duration: 1.1 }}>
@@ -302,7 +303,7 @@ export default function HomePage() {
         <div className="museum-tools-heading"><strong id="museum-tools-title">أدوات المعرض</strong><button onClick={() => setToolsOpen(false)} aria-label="إغلاق"><X size={20} /></button></div>
         <nav className="museum-tools-nav" aria-label="التنقل الرئيسي">
           <button className={activeView === "gallery" && !selectedCategory ? "is-active" : ""} onClick={openHome}>الرئيسية</button>
-          <button className={activeView === "gallery" && Boolean(selectedCategory) ? "is-active" : ""} onClick={() => { setActiveView("gallery"); setStoryOpen(false); setToolsOpen(false); focusCategories(); }}>الأقسام</button>
+          <button className={activeView === "gallery" && Boolean(selectedCategory) ? "is-active" : ""} onClick={() => { setToolsOpen(false); focusCategories(); }}>الأقسام</button>
           <button className={activeView === "projects" ? "is-active" : ""} onClick={() => { setActiveView("projects"); setToolsOpen(false); }}>المشاريع</button>
           <button className={activeView === "about" ? "is-active" : ""} onClick={() => { setActiveView("about"); setToolsOpen(false); }}>عن المنصة</button>
         </nav>
@@ -337,7 +338,7 @@ export default function HomePage() {
           </motion.form>}
         </AnimatePresence>
         {!(storyOpen && activeView === "gallery") && <TeacherProfile settings={settings} onExpand={() => setProfileOpen(true)} />}
-        <button className="museum-open-tools" onClick={() => setToolsOpen(true)}><Grid2X2 size={16} /> أدوات المعرض</button>
+        <button className="museum-open-tools" onClick={() => setToolsOpen(true)}><Menu size={20} /> معرضنا</button>
 
         {storyOpen && activeView === "gallery" && <GalleryStory
           key={selectedCategory}
@@ -380,7 +381,7 @@ export default function HomePage() {
               <p className="museum-panel-lead">مساحات تجمع الفن، والفكرة، وأجمل لحظات الإبداع.</p>
               {events.length > 0 ? <div className="museum-event-list">{events.slice(0, 3).map((event) => <article className="museum-event" key={event.id}>
                 {event.coverUrl && <Image src={event.coverUrl} alt="" fill sizes="(max-width: 700px) 85vw, 260px" />}
-                <span className="museum-event-copy"><small>{event.startsAt ? new Date(event.startsAt).toLocaleDateString("ar-SA") : "من معارضنا"}</small><strong>{event.title}</strong>{event.description && <em>{event.description}</em>}</span>
+                <span className="museum-event-copy"><small>{event.startsAt ? new Date(event.startsAt).toLocaleDateString("ar-SA-u-nu-latn") : "من معارضنا"}</small><strong>{event.title}</strong>{event.description && <em>{event.description}</em>}</span>
               </article>)}</div> : <p className="museum-panel-empty">تظهر هنا المعارض والمشاريع المنشورة من لوحة الإدارة.</p>}
             </div>}
             {activeView === "about" && <div className="museum-panel-content museum-about-content">
@@ -411,14 +412,13 @@ export default function HomePage() {
           <button onClick={openHome}>عودة</button>
           <div className="gallery-screen-logos"><Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية" width={50} height={50} /><Image src="/assets/logos/al-motaqadimah-official.png" alt="شعار شركة المدارس المتقدمة" width={65} height={40} /></div>
           <button onClick={() => setToolsOpen(true)}>معرضنا</button>
-        </div> : <button className="discovery-trigger" aria-expanded={categoriesOpen} aria-controls="category-accordion" onClick={() => setCategoriesOpen((open) => !open)}>
-          <Image src="/assets/decorations/palette.svg" width={68} height={68} alt="" />
-          <span><strong>🎨 عالم الألوان والإبداع</strong><small>اكتشفوا أعمالنا الفنية!</small><b>استكشف أقسام المعرض</b><small>10 أقسام إبداعية بانتظاركم</small></span>
-          <motion.span animate={{ rotate: categoriesOpen ? 180 : 0 }}><ChevronDown size={22} /></motion.span>
-        </button>}
+        </div> : <motion.button className="discovery-trigger" onClick={() => chooseCategory("__all__")} whileTap={reduceMotion ? undefined : { scale: .965 }}>
+          <Image className="discovery-palette" src="/assets/decorations/paint-palette.webp" width={180} height={140} alt="" />
+          <span className="discovery-copy"><strong>عالم الألوان والإبداع</strong><small>اكتشفوا أعمالنا الفنية!</small><b className="discovery-play"><CirclePlay size={22} /> استكشف أقسام المعرض</b><small>10 أقسام إبداعية بانتظاركم</small></span>
+        </motion.button>}
         {storyOpen && activeView === "gallery" && <div className="gallery-category-heading"><strong>أقسام المعرض</strong><small>10 أقسام إبداعية بانتظاركم</small></div>}
         <AnimatePresence initial={false}>
-        {(categoriesOpen || (storyOpen && activeView === "gallery")) && <motion.div id="category-accordion" className="museum-category-track"
+        {storyOpen && activeView === "gallery" && <motion.div className="museum-category-track"
           initial={reduceMotion ? false : { height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduceMotion ? 0 : .35 }}>
           <div className="museum-category-list" id="category-dock" tabIndex={-1}>
             {visibleCategories.map((category, index) => {
@@ -465,6 +465,27 @@ export default function HomePage() {
 }
 
 function TeacherProfile({ settings, full = false, onExpand }: { settings: PublicSettings; full?: boolean; onExpand?: () => void }) {
+  if (!full) return <aside className="school-hero" aria-label="الملف المهني للأستاذ غيلان الخزامي">
+    <div className="school-hero-logos" aria-label="شعارات المدارس">
+      <Image src="/assets/logos/ibtekaria-official.png" alt="شعار مدارس الابتكارية الأهلية" width={150} height={130} priority />
+      <span aria-hidden="true" />
+      <Image src="/assets/logos/al-motaqadimah-official.png" alt="شعار شركة المدارس المتقدمة" width={150} height={110} priority />
+    </div>
+    <div className="school-hero-content">
+      <div className="school-hero-portrait">
+        <Image src={settings.teacherPhotoUrl || defaultSettings.teacherPhotoUrl!} alt={`صورة ${settings.teacherName}`} fill sizes="(max-width: 700px) 42vw, 260px" priority />
+      </div>
+      <div className="school-hero-copy">
+        <h1 className="school-hero-title"><span>بصمة الابتكارية</span><b>2</b></h1>
+        <div className="school-teacher-name"><h2>{settings.teacherName}</h2><p>{settings.teacherTitle}</p></div>
+        <div className="school-leadership">
+          <div><BookOpen aria-hidden="true" size={18} /><strong>مدير المدرسة</strong><span>{settings.principal}</span></div>
+          <div><UserRound aria-hidden="true" size={18} /><strong>المشرف الأكاديمي</strong><span>{settings.academicSupervisor}</span></div>
+        </div>
+        <button className="school-profile-button" onClick={onExpand}>عرض الملف المهني <ChevronLeft size={15} /></button>
+      </div>
+    </div>
+  </aside>;
   return (
     <aside className={`profile-composition ${full ? "profile-composition-full" : ""}`} aria-label="الملف المهني للأستاذ غيلان الخزامي">
       <div className="profile-logos" aria-label="شعارات المدارس">
@@ -477,7 +498,7 @@ function TeacherProfile({ settings, full = false, onExpand }: { settings: Public
           <Image src={settings.teacherPhotoUrl || defaultSettings.teacherPhotoUrl!} alt={`صورة ${settings.teacherName}`} fill sizes="(max-width: 900px) 220px, 30vw" priority={!full} />
         </div>
         <div className="profile-copy">
-          <span className="profile-kicker">بصمة فن · الابتكارية ٢</span>
+          <span className="profile-kicker">بصمة فن · الابتكارية 2</span>
           <h2 id={full ? "profile-dialog-title" : undefined}>{settings.teacherName}</h2>
           <p className="profile-role">{settings.teacherTitle}.</p>
           <div className="profile-details">

@@ -4,8 +4,8 @@ An Arabic, right-to-left digital art museum for مدارس الابتكارية 
 
 ## What is included
 
-- Compact Arabic homepage with school/company marks, teacher portrait, and a collapsed category selector. Expanding categories permits scrolling; additional categories are accessible through the category page controls.
-- Category selection opens a three-second school-logo transition and a filterable artwork gallery. Visitors can submit feedback for administrator approval; only approved feedback is public. Each homepage load increments a persistent visit counter.
+- Illustrated single-screen Arabic homepage with school/company marks, teacher portrait, visitor counter, feedback, and a button opening the full-screen gallery. Additional categories are accessible through the category page controls.
+- The gallery opens with a three-second school-logo transition and filterable artwork slideshow. Feedback appears immediately and administrators can hide or delete it; the visitor carousel fetches ten entries per page. Each homepage load increments a persistent visit counter.
 - An eight-second cinematic welcome plays once per browser session, can be skipped, and can be replayed from **أدوات المعرض**. Reduced-motion preferences show the composition without animation.
 - Installable progressive web app, with an offline connection notice; live gallery content still requires an internet connection.
 - Searchable, published-only public gallery with animated category stories, 3-second multi-image slides and 4-second single-image works, server-backed pagination, artwork details, student privacy labels, and a lightweight Three.js gallery-room scene. Auto-advance pauses for dialogs, hidden tabs, and reduced-motion preferences.
@@ -58,7 +58,7 @@ The Prisma schema is `apps/api/prisma/schema.prisma`. Runtime queries use `DATAB
 
 Apply the artwork display-order migration before deploying the updated API. Lower order numbers appear first; works without an assigned order follow them using the previous featured/date ordering. Existing student attribution and other artwork details are preserved when editing. New works added through the simplified admin are published immediately and do not require a student record.
 
-Apply the visitor-feedback migration before deploying the updated API. The authenticated admin can publish, hide, or delete visitor feedback. The counter records homepage loads, not unique visitors, and feedback is not public until approved.
+Apply the visitor-feedback migration before deploying the updated API. Feedback is public immediately; the authenticated admin can hide, republish, or delete it. The counter records homepage loads, not unique visitors.
 
 For schema changes during development, use Prisma Migrate to create and review migration SQL, then commit the resulting migration directory. Never run `db push` against production.
 

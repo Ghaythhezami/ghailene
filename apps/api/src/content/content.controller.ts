@@ -50,18 +50,27 @@ export class PublicContentController {
   }
 
   @Get("feedback")
-  feedback() {
-    return this.prisma.visitorFeedback.findMany({
-      where: { approved: true }, orderBy: { createdAt: "desc" }, take: 3,
-      select: { id: true, name: true, message: true, createdAt: true },
-    });
+  async feedback(@Query("page") requestedPage = "1") {
+    const page = Math.min(100000, Math.max(1, Number.parseInt(requestedPage, 10) || 1));
+    const pageSize = 10;
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.visitorFeedback.findMany({
+        where: { approved: true }, orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: (page - 1) * pageSize, take: pageSize,
+        select: { id: true, name: true, message: true, createdAt: true },
+      }),
+      this.prisma.visitorFeedback.count({ where: { approved: true } }),
+    ]);
+    return { items, pagination: { page, pageSize, total, pages: Math.ceil(total / pageSize) } };
   }
 
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @Post("feedback")
   async submitFeedback(@Body() body: CreateFeedbackDto) {
-    await this.prisma.visitorFeedback.create({ data: body });
-    return { submitted: true };
+    return this.prisma.visitorFeedback.create({
+      data: { ...body, approved: true },
+      select: { id: true, name: true, message: true, createdAt: true },
+    });
   }
 
   @Get("gallery")
