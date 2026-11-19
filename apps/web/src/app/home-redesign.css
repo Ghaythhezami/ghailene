@@ -12,10 +12,8 @@
   padding: 0 0 0;
   color: #155b68;
   background:
-    radial-gradient(ellipse at 50% 1%, #fff 0%, transparent 25%),
-    radial-gradient(ellipse at 0% 40%, #4ed4dd 0%, transparent 22%),
-    radial-gradient(ellipse at 100% 65%, #62e2d5 0%, transparent 24%),
-    linear-gradient(165deg, #dff9ff 0%, #b5eef4 38%, #e8fbeb 76%, #a5e8e7 100%);
+    url("/assets/decorations/art-world-bg.webp") center / min(100%, 760px) 100% no-repeat,
+    linear-gradient(165deg, #d8f8ff, #a6e9ed 55%, #c4f5d7);
 }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-stage,
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-stage:not(:has(.museum-featured)),
@@ -27,7 +25,7 @@
   margin: 0 auto;
   padding: 10px 12px 18px;
   overflow: visible;
-  background: transparent url("/assets/decorations/art-waves.svg") center bottom / 100% 46px no-repeat;
+  background: transparent url("/assets/decorations/flowing-ribbon.webp") center bottom / 100% 46px no-repeat;
 }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-stage::before { display: none; }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-stage::after {
@@ -90,7 +88,7 @@
   border: clamp(4px, 1vw, 7px) solid #e8ffd4;
   border-radius: 25% 25% 21% 21% / 18% 18% 15% 15%;
   background: #075969;
-  box-shadow: 0 0 0 3px #8cd750, 0 0 0 6px #59dcdb, 0 0 24px #00a9a688, 0 7px 12px #00758677;
+  box-shadow: 0 0 0 3px #a0ef4b, 0 0 0 6px #59dcdb, 0 0 0 9px #f4ffdda6, 0 0 26px #45e8b6b8, 0 10px 18px #00758677;
 }
 .school-hero-portrait img { object-fit: cover; object-position: center top; }
 .school-hero-copy { display: flex; min-width: 0; flex: 1; align-items: stretch; flex-direction: column; justify-content: center; gap: clamp(6px, 1.8vw, 14px); direction: rtl; text-align: center; }
@@ -102,10 +100,10 @@
   gap: 5px;
   margin: 0;
   padding: 4px 7px;
-  border: 2px solid #8ceaf1;
+  border: 1px solid #bdfaff;
   border-radius: 45% 28% 42% 25% / 32% 42% 30% 43%;
-  background: linear-gradient(165deg, #26c8d2 0%, #008d9f 47%, #056079 100%);
-  box-shadow: inset 0 2px 6px #e3ffff9c, 0 5px 0 #006a78, 0 8px 12px #007e8d55;
+  background: radial-gradient(ellipse at 50% 0%, #b8ffffa8, transparent 48%), linear-gradient(165deg, #38d6df 0%, #00a4b1 43%, #006b7c 100%);
+  box-shadow: inset 0 2px 5px #efffffe0, inset 0 -3px 4px #005b6a80, 0 4px 0 #00768b, 0 7px 14px #007e8d70;
   color: #fff;
   font-size: clamp(17px, 5vw, 34px);
   font-weight: 900;
@@ -115,10 +113,10 @@
 .school-hero-title b { color: #a4e943; font-family: Arial, sans-serif; font-size: clamp(42px, 11vw, 76px); line-height: .9; text-shadow: 0 3px 0 #458b18, 0 5px 4px #00534f; }
 .school-teacher-name {
   padding: 8px 5px;
-  border: 2px solid #fff;
-  border-radius: 22px;
-  background: linear-gradient(#fffef9, #fff4d5);
-  box-shadow: 0 4px 0 #e7d8a9, 0 6px 12px #228fa23a;
+  border: 1px solid #fffef4;
+  border-radius: 38% 30% 32% 35% / 35% 36% 30% 33%;
+  background: radial-gradient(ellipse at 50% 0%, #fff, transparent 75%), linear-gradient(160deg, #fffdf6, #fff1ce);
+  box-shadow: inset 0 3px 5px #fff, inset 0 -3px 6px #e5bd6544, 0 4px 0 #e9d39f, 0 8px 14px #007e8d50;
 }
 .school-teacher-name h2 { margin: 0; color: #4a3b30; font-size: clamp(13px, 3.9vw, 25px); font-weight: 900; line-height: 1.35; }
 .school-teacher-name p { margin: 1px 0 0; color: #007f91; font-size: clamp(11px, 2.9vw, 18px); font-weight: 800; }
@@ -131,11 +129,11 @@
   justify-content: center;
   gap: 2px;
   padding: 6px 3px;
-  border: 2px solid white;
-  border-radius: 15px;
-  background: linear-gradient(150deg, #f8ffff, #d9f8f6);
+  border: 1px solid #ffffffd9;
+  border-radius: 23% 19% 23% 18% / 25% 25% 23% 23%;
+  background: linear-gradient(160deg, #ffffffeb, #d7faf5d9);
   color: #0c6076;
-  box-shadow: 0 4px 8px #007b8c30;
+  box-shadow: inset 0 2px 6px #fff, inset 0 -3px 6px #81d8c433, 0 5px 10px #007b8c38;
   font-size: clamp(9px, 2.45vw, 15px);
   font-weight: 800;
   line-height: 1.3;
@@ -161,10 +159,10 @@
   justify-content: center;
   padding: 12px 14% 20px 19%;
   overflow: hidden;
-  border: 4px solid #fff;
-  border-radius: 30px;
-  background: url("/assets/decorations/art-waves.svg") center bottom / 100% 45px no-repeat, linear-gradient(160deg, #f8ffff, #d3f8f7);
-  box-shadow: 0 0 0 2px #8fe6dc, 0 7px 0 #02a6b0, 0 12px 18px #138a8b4a, inset 0 2px 9px #fff;
+  border: 2px solid #ffffffd9;
+  border-radius: 11% 9% 12% 10% / 23% 25% 24% 25%;
+  background: url("/assets/decorations/flowing-ribbon.webp") center bottom / 100% 45px no-repeat, radial-gradient(ellipse at 50% 0%, #ffffffeb, #d8f8f8d9 75%, #a7e8e6e8);
+  box-shadow: 0 4px 0 #0aa9ad80, 0 9px 18px #138a8b50, inset 0 3px 8px #fff, inset 0 -5px 10px #84d9d65c;
   text-align: center;
 }
 .museum-app:not(.museum-app-story) .discovery-trigger::after {
@@ -242,13 +240,13 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 4px solid #fff;
-  border-radius: 30px;
-  background: url("/assets/decorations/art-waves.svg") center bottom / 100% 48px no-repeat, linear-gradient(160deg, #efffff, #bceff2);
-  box-shadow: 0 5px 0 #b0ecdb, 0 10px 18px #078c9b36, inset 0 3px 9px #fff;
+  border: 2px solid #ffffffd9;
+  border-radius: 12% 10% 12% 11% / 29% 26% 27% 28%;
+  background: url("/assets/decorations/flowing-ribbon.webp") center bottom / 100% 48px no-repeat, radial-gradient(ellipse at 50% 10%, #ffffffd9, #c2eff4dd 80%);
+  box-shadow: 0 5px 12px #078c9b50, inset 0 3px 9px #fff, inset 0 -5px 10px #68cfcc4d;
 }
 .visitor-counter-card::before { position: absolute; top: 14px; left: 20%; width: 68px; height: 22px; border-radius: 50%; background: #ffffff9e; box-shadow: 18px -8px 0 3px #ffffffa6, 40px 0 0 #ffffff9e; content: ""; }
-.visitor-counter-card .visitor-children { position: absolute; z-index: 1; bottom: -8%; left: -3%; width: 40%; height: 96%; object-fit: contain; object-position: bottom left; }
+.visitor-counter-card .visitor-children { position: absolute; z-index: 1; bottom: -8%; left: -3%; width: 36%; height: 96%; object-fit: contain; object-position: bottom left; }
 .visitor-counter-card .visitor-easel { position: absolute; z-index: 1; right: -2%; bottom: -6%; width: 20%; height: 100%; object-fit: contain; object-position: bottom right; }
 .visitor-counter-card .visitor-count { position: relative; z-index: 2; width: 47%; margin-inline: auto; transform: translateX(6%); color: #006f84; text-align: center; }
 .visitor-count h2 { display: flex; align-items: center; justify-content: center; gap: 4px; margin: 0; color: #007e8c; font-size: clamp(15px, 4vw, 26px); font-weight: 900; white-space: nowrap; }
@@ -259,15 +257,16 @@
   position: relative;
   overflow: hidden;
   padding: clamp(16px, 4vw, 30px) clamp(12px, 3vw, 26px) 25px;
-  border: 4px solid white;
-  border-radius: 32px;
-  background: linear-gradient(155deg, #f8fff2, #dcf5c8 72%, #f8fff0);
-  box-shadow: 0 0 0 2px #aee4ab, 0 9px 18px #418d7750, inset 0 3px 10px #fff;
+  border: 2px solid #ffffffdf;
+  border-radius: 12% 11% 10% 10% / 25% 24% 25% 24%;
+  background: radial-gradient(ellipse at 50% 0%, #ffffffed, transparent 65%), linear-gradient(155deg, #f5ffece8, #d8f5c8e8 72%, #efffe4eb);
+  box-shadow: 0 6px 16px #408f7959, inset 0 3px 10px #fff, inset 0 -5px 10px #97db9b4d;
 }
-.feedback-card::before, .feedback-card::after { position: absolute; width: clamp(35px, 9vw, 60px); height: clamp(35px, 9vw, 60px); background: url("/assets/decorations/art-sparkle.svg") center / contain no-repeat; content: ""; pointer-events: none; }
-.feedback-card::before { top: 7px; left: 6px; }
-.feedback-card::after { right: -7px; bottom: -6px; background-image: url("/assets/decorations/art-leaves.svg"); }
+.feedback-card::before, .feedback-card::after { position: absolute; z-index: 1; width: clamp(28px, 4.5vh, 52px); height: clamp(28px, 4.5vh, 52px); background: center / contain no-repeat; content: ""; pointer-events: none; }
+.feedback-card::before { top: 5px; left: 6px; background-image: url("/assets/decorations/glossy-star.webp"); }
+.feedback-card::after { top: 4px; right: 6px; background-image: url("/assets/decorations/glowing-bulb.webp"); }
 .feedback-heading { position: relative; z-index: 1; text-align: center; }
+.feedback-heading::before { position: absolute; top: -3px; left: 20%; width: clamp(22px, 3.4vh, 35px); height: clamp(22px, 3.4vh, 35px); background: url("/assets/decorations/feedback-bubble.webp") center / contain no-repeat; content: ""; pointer-events: none; }
 .feedback-heading h2 { margin: 0; color: #00856f; font-size: clamp(23px, 6vw, 38px); font-weight: 900; line-height: 1.2; }
 .feedback-heading p { margin: 4px 0 13px; color: #155b68; font-size: clamp(12px, 3vw, 18px); font-weight: 800; }
 .feedback-content { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; direction: ltr; }
@@ -318,16 +317,12 @@
   padding: 24px 12px 14px;
   border: 0;
   border-radius: 0;
-  background: url("/assets/decorations/art-waves.svg") center top / 100% 50px no-repeat, linear-gradient(#e9fbf3, #068b9a);
+  background: transparent;
 }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-footer::before { display: none; }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-footer-message { padding: 6px 10px; background: #eefff8; color: #086c72; font-size: 11px; }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-footer-brand strong,
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-footer-brand small { color: #fff; font-size: 10px; }
-@media (max-width: 340px) {
-  .feedback-content { grid-template-columns: minmax(0, 1fr); }
-  .visitor-recent { padding: 0; border: 0; }
-}
 @media (prefers-reduced-motion: no-preference) {
   .discovery-palette { animation: discovery-float 5s ease-in-out infinite; }
   @keyframes discovery-float { 50% { transform: translateY(-5px) rotate(-3deg); } }
@@ -367,7 +362,7 @@
 .school-leadership svg { width: clamp(13px, 1.8vh, 18px); height: clamp(13px, 1.8vh, 18px); }
 .school-profile-button { min-height: 30px; padding: 3px 8px; font-size: clamp(10px, 1.4vh, 14px); }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-category-dock { height: 100%; min-height: 0; }
-.museum-app:not(.museum-app-story) .discovery-trigger { width: 100%; height: 100%; min-height: 0; padding: 4px 11% 13px 20%; background-size: 100% clamp(23px, 4.5vh, 42px), auto; }
+.museum-app:not(.museum-app-story) .discovery-trigger { width: 100%; height: 100%; min-height: 0; padding: 4px 11% 13px 20%; background-size: 100% clamp(12px, 2.4vh, 24px), auto; }
 .museum-app:not(.museum-app-story) .discovery-trigger > span:last-child { width: auto; height: auto; border-radius: 0; background: transparent; place-items: initial; }
 .museum-app:not(.museum-app-story) .discovery-copy { gap: 2px; }
 .museum-app:not(.museum-app-story) .discovery-copy strong { font-size: clamp(16px, 2.8vh, 30px); }
@@ -404,7 +399,7 @@
   grid-template-rows: minmax(0, 46fr) minmax(0, 54fr);
   gap: clamp(4px, .7vh, 8px);
 }
-.visitor-counter-card { min-height: 0; height: 100%; background-size: 100% clamp(25px, 5vh, 45px), auto; }
+.visitor-counter-card { min-height: 0; height: 100%; background-size: 100% clamp(12px, 2.4vh, 24px), auto; }
 .visitor-counter-card .visitor-count h2 { font-size: clamp(14px, 2.4vh, 24px); }
 .visitor-counter-card .visitor-count > strong { font-size: clamp(34px, 6vh, 70px); }
 .visitor-counter-card .visitor-count p { font-size: clamp(10px, 1.5vh, 15px); }
@@ -493,6 +488,11 @@
 .simple-admin-list button, .admin-photo-preview { background: #ddf5ed; color: #075969; }
 .admin-photo-preview button { background: #bcebdc; color: #075969; }
 .simple-admin-content .admin-panel { box-shadow: 0 10px 24px #108d8b21; }
+@media (max-height: 650px) {
+  .museum-app:not(.museum-app-story):not(.museum-app-panel) .museum-open-tools { top: 4px; min-height: 36px; padding: 4px 9px; font-size: 11px; }
+  .museum-app:not(.museum-app-story) .discovery-trigger { padding-top: 1px; padding-bottom: 5px; }
+  .museum-app:not(.museum-app-story) .discovery-trigger .discovery-copy { gap: 0; line-height: 1.05; }
+}
 @media (prefers-reduced-motion: no-preference) {
   .discovery-play { animation: gallery-attention 2.8s ease-in-out infinite; }
   .discovery-hand { animation: gallery-tap 2.8s ease-in-out infinite; }
