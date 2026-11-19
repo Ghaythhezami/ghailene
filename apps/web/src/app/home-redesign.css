@@ -520,19 +520,10 @@
   height: 100%;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 4px;
+  padding-bottom: clamp(8px, 2vh, 18px);
 }
-.discovery-heading {
-  display: grid;
-  justify-items: center;
-  padding: 3px 16px;
-  border-radius: 22px;
-  background: #e9fffbdb;
-  box-shadow: 0 3px 9px #005f7530;
-}
-.museum-app:not(.museum-app-story) .discovery-heading strong { font-size: clamp(13px, 2vh, 21px); line-height: 1.2; }
-.museum-app:not(.museum-app-story) .discovery-heading small { font-size: clamp(10px, 1.4vh, 14px); }
 .museum-app:not(.museum-app-story) .discovery-copy .discovery-play {
   width: min(calc(100% - 22px), 490px);
   min-height: clamp(56px, 8vh, 76px);
@@ -545,7 +536,6 @@
   font-size: clamp(14px, 2.4vh, 23px);
 }
 .discovery-play > span { display: grid; justify-items: center; line-height: 1.2; }
-.museum-app:not(.museum-app-story) .discovery-play > span small { color: #fff; font-size: clamp(10px, 1.5vh, 15px); }
 .museum-app:not(.museum-app-story) .discovery-hand { right: 0; bottom: -14px; }
 .museum-app:not(.museum-app-story):not(.museum-app-panel) .visitor-panel {
   grid-template-columns: repeat(2, minmax(0, 1fr));

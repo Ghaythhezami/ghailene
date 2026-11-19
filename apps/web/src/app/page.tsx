@@ -519,8 +519,7 @@ export default function HomePage() {
           <button className="gallery-header-menu" onClick={() => setToolsOpen(true)} aria-label="أدوات المعرض"><Menu size={21} /></button>
         </div> : <motion.button className="discovery-trigger" tabIndex={0} onClick={() => chooseCategory("remote")} whileTap={reduceMotion ? undefined : { scale: .965 }}>
           <span className="discovery-copy">
-            <span className="discovery-heading"><strong>عالم الألوان والإبداع</strong><small>10 أقسام إبداعية بانتظاركم</small></span>
-            <b className="discovery-play"><CirclePlay size={27} /><span>استكشف أقسام المعرض<small>اكتشفوا أعمالنا الفنية!</small></span><Image className="discovery-hand" src="/assets/decorations/tap-hand.webp" alt="" width={200} height={276} /></b>
+            <b className="discovery-play"><CirclePlay size={27} /><span>اكتشفوا أعمالنا الفنية!</span><Image className="discovery-hand" src="/assets/decorations/tap-hand.webp" alt="" width={200} height={276} /></b>
           </span>
         </motion.button>}
         <AnimatePresence initial={false}>
